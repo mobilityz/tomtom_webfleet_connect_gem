@@ -1,0 +1,697 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"response",
+				"response_body"
+			],
+			[
+				"in",
+				"increment_counter"
+			],
+			[
+				"su",
+				"success"
+			],
+			[
+				"Date",
+				"DateTime"
+			],
+			[
+				"estimate",
+				"estimated_start"
+			],
+			[
+				"si",
+				"sign_in_user"
+			],
+			[
+				"catchement",
+				"catchement_area_path"
+			],
+			[
+				"cat",
+				"catchement_area"
+			],
+			[
+				"catchement_area",
+				"catchement_area_id"
+			],
+			[
+				"id",
+				"id"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "lib/tomtom_webfleet_connect/tomtom_request.rb",
+			"settings":
+			{
+				"buffer_size": 930,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/generators/tomtom_webfleet_connect/templates/migration.rb",
+			"settings":
+			{
+				"buffer_size": 5784,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/generators/tomtom_webfleet_connect/tomtom_webfleet_connect_generator.rb",
+			"settings":
+			{
+				"buffer_size": 615,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "spec/tomtom_webfleet_connect/models/tomtom_method_spec.rb",
+			"settings":
+			{
+				"buffer_size": 1177,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tomtom_webfleet_connect/models/tomtom_method.rb",
+			"settings":
+			{
+				"buffer_size": 475,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tomtom_webfleet_connect/tomtom_response.rb",
+			"settings":
+			{
+				"buffer_size": 2020,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tomtom_webfleet_connect/api.rb",
+			"settings":
+			{
+				"buffer_size": 3901,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "spec/tomtom_webfleet_connect/api_spec.rb",
+			"settings":
+			{
+				"buffer_size": 8502,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tomtom_webfleet_connect/version.rb",
+			"settings":
+			{
+				"buffer_size": 53,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tomtom_webfleet_connect/models/user.rb",
+			"settings":
+			{
+				"buffer_size": 2570,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lib/tomtom_webfleet_connect/models/method_counter.rb",
+			"settings":
+			{
+				"buffer_size": 3930,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/tomtom_webfleet_connect.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/Gemfile",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/tomtom_webfleet_connect/models/method_counter.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/spec/tomtom_webfleet_connect/models/method_counter_spec.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/spec/tomtom_webfleet_connect/models/user_spec.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/tomtom_webfleet_connect/models/user.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/spec/tomtom_webfleet_connect/tomtom_request_spec.rb",
+		"/home/maxime/Dev/extern (1)",
+		"/home/maxime/Dev/extern",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/tomtom_webfleet_connect/version.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/generators/tomtom_webfleet_connect/templates/method_counters.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/generators/tomtom_webfleet_connect/templates/methods.rb",
+		"/home/maxime/Dev/workspace_rails/tomtom_webfleet_connect/lib/generators/tomtom_webfleet_connect/templates/users.rb",
+		"/usr/share/applications/sublime.desktop",
+		"/usr/share/applications/aptana.desktop",
+		"/usr/share/applications/defaults.list",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/reservation_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/models/estimate.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/models/reserved_journey.rb",
+		"/home/maxime/.bash_profile",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/views/dashboard/planning.html.erb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/helpers/payment_helper.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/routing/home_routing_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/spec_helper.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/support/controller_macros.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/support/request_macros.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/requests/drivers_catchement_areas_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/requests/home_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/home_controller.rb",
+		"/home/maxime/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/lib/payments_manager.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/dashboard_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/licences_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/infos_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/routing/infos_routing_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/routing/catchement_areas_routing_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/routing/drivers_catchement_areas_routing_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/routing/admin/invoices_routing_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/requests/admin/order_items_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/requests/admin/invoices_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/requests/admin/orders_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/config/application.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/Rakefile",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/controllers/drivers_catchement_areas_controller_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/drivers_catchement_areas_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/order_items_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/orders_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/addresses_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/models/address.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/catchement_areas_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/models/user.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/mailers/user_mailer.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/credit_cards_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/drivers_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/opinions_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/registrations_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/passwords_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/payments_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/vehicles_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/transactions_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/users_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/rates_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/reserved_journeys_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/points_controller_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/promotional_codes_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/passengers_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/companies_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/company_relations_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/estimates_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/admin/invoices_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/controllers/application_controller.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/config/routes.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/controllers/admin/estimates_controller_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/controllers/admin/invoices_controller_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/controllers/admin/order_items_controller_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/controllers/admin/orders_controller_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/models/drivers_catchement_area.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/app/models/catchement_area.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/spec/helpers/drivers_catchement_areas_helper_spec.rb",
+		"/home/maxime/Dev/workspace_rails/AppEcotaco/config/environment.rb"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"@tomtom_webfleet_connect",
+			"method",
+			"\n        ",
+			"        \n",
+			"\nUser.create",
+			"gedit.desktop",
+			"calculate_price_with_promotion",
+			"Date.",
+			"dashboard_planning_path(:locale => current_user.language, :id => @typical_week.id)",
+			"dashboard_planning_path(:local => current_user.language, :id => @typical_week.id)",
+			"dashboard_planning_path(@typical_week.id)",
+			"dashboard_planning_path(@typical_week)",
+			"get \"licences/create\"",
+			"driver.add_role :admin",
+			"user.add_role :driver",
+			"    \n",
+			"\"/infos/avis\" =>  \"infos#create_avis\"\n    # match \"/infos/avis/save\" =>  \"infos#save_avis\"\n    # match \"/infos/share\" =>  \"infos#share\"\n    # match \"/infos/quick-start\" =>  \"infos#quick-start\"\n    # match \"/infos/send_to_friend\" => \"infos#send_to_friend\"\n    # match \"/infos/faq\" => \"infos#faq\"\n    # match \"/infos/cgu\" => \"infos#cgu\"\n    # match \"/i",
+			"\n    xit \"routes to #edit\" do\n      get(\"/admin/invoices/1/edit\").should route_to(\"admin/invoices#edit\", :id => \"1\")\n    end\n\n    xit \"routes to #create\" do\n      post(\"/admin/invoices\").should route_to(\"admin/invoices#create\")\n    end\n\n    xit \"routes to #update\" do\n      put(\"/admin/invoices/1\").should route_to(\"admin/invoices#update\", :id => \"1\")\n    end\n\n    xit \"routes to #destroy\" do\n      delete(\"/admin/invoices/1\").should route_to(\"admin/invoices#destroy\", :id => \"1\")\n    end",
+			"request",
+			"do",
+			"    \n",
+			":typeahead_places, :typeahead_places_automplete, :typeahead_places_details",
+			"only",
+			"company",
+			"end",
+			"authorize_resource",
+			"  \n",
+			"\n			sign_in_user\n		end",
+			"DriversCatchementArea",
+			"redirect_to",
+			"do",
+			"  describe \"GET index\" do\n    it \"assigns all drivers_catchement_areas as @drivers_catchement_areas\" do\n      drivers_catchement_area = DriversCatchementArea.create! valid_attributes\n      get :index, {:catchement_area_id => catchement_area.id}, valid_session\n      assigns(:drivers_catchement_areas).should eq([drivers_catchement_area])\n    end\n  end",
+			"valid_session",
+			"  \n",
+			"is should return the minimal set of values that should be in the session\n  # in order to pass any filters (e.g. authentication) defined in\n  # DriversCatchementAreasController. Be sure to keep this updated too.\n  let(:v"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"client",
+			"name",
+			"sublime.desktop",
+			"dashboard_planning_week_path(:locale => current_user.language, :id => @typical_week.id)",
+			"dashboard_planning_path(:locale => current_user.language, :id => @typical_week.id)",
+			"dashboard_planning_path(:local => current_user.language, :id => @typical_week.id)",
+			"dashboard_planning_path(@typical_week.id)",
+			"driver.add_role :driver",
+			"driver.add_role :admin"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "lib/tomtom_webfleet_connect/tomtom_request.rb",
+					"settings":
+					{
+						"buffer_size": 930,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								747,
+								747
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "lib/generators/tomtom_webfleet_connect/templates/migration.rb",
+					"settings":
+					{
+						"buffer_size": 5784,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2711,
+								2711
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "lib/generators/tomtom_webfleet_connect/tomtom_webfleet_connect_generator.rb",
+					"settings":
+					{
+						"buffer_size": 615,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								606,
+								606
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "spec/tomtom_webfleet_connect/models/tomtom_method_spec.rb",
+					"settings":
+					{
+						"buffer_size": 1177,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								596,
+								596
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "lib/tomtom_webfleet_connect/models/tomtom_method.rb",
+					"settings":
+					{
+						"buffer_size": 475,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								359,
+								359
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "lib/tomtom_webfleet_connect/tomtom_response.rb",
+					"settings":
+					{
+						"buffer_size": 2020,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								131,
+								131
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 306.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "lib/tomtom_webfleet_connect/api.rb",
+					"settings":
+					{
+						"buffer_size": 3901,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3555,
+								3555
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "spec/tomtom_webfleet_connect/api_spec.rb",
+					"settings":
+					{
+						"buffer_size": 8502,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7206,
+								7206
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1581.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "lib/tomtom_webfleet_connect/version.rb",
+					"settings":
+					{
+						"buffer_size": 53,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								47,
+								47
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "lib/tomtom_webfleet_connect/models/user.rb",
+					"settings":
+					{
+						"buffer_size": 2570,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								608,
+								608
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "lib/tomtom_webfleet_connect/models/method_counter.rb",
+					"settings":
+					{
+						"buffer_size": 3930,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2528,
+								2528
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 112.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 369.0,
+	"status_bar_visible": true
+}
