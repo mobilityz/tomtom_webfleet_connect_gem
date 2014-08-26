@@ -33,7 +33,7 @@ rake db:migrate
 
 ##Add users :
 ```
-TomtomWebfleetConnect::Models::User.create(name: "api", password: "ecotaco")
+TomtomWebfleetConnect::Models::User.create(name: "name", password: "password")
 ```
 
 ##Add methods :
