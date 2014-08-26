@@ -20,11 +20,8 @@ module TomtomWebfleetConnect
     def send_request(options = {})
       method = TomtomWebfleetConnect::Models::TomtomMethod.find_by_name(options[:action])
       user = TomtomWebfleetConnect::Models::User.avalaible_user(method).first
-      if !user.nil?
-        url = get_method_url(method, user)
-        request = TomtomWebfleetConnect::TomtomRequest.new
-        return request.send_request(url, options)
-      else
+
+      if user.nil?
         response = TomtomWebfleetConnect::TomtomResponse.new
         response.http_status_code = 200
         response.http_status_message = "OK"
@@ -34,6 +31,10 @@ module TomtomWebfleetConnect
         response.error = true
         response.success = false
         return response
+      else
+        url = get_method_url(method, user)
+        request = TomtomWebfleetConnect::TomtomRequest.new
+        return request.send_request(url, options)
       end
     end
 

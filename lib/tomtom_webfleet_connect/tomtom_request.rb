@@ -4,7 +4,7 @@ require 'rack'
 module TomtomWebfleetConnect
   
   ##
-  # This class represents the formated tomtom response
+  # This class represents the formated tomtom request
   class TomtomRequest
 
     attr_reader :request_url, :response 

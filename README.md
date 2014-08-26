@@ -20,7 +20,7 @@ Ruby gem for easily integrate tomtom webfleet connect
 
 ##Add gem to gemfile :
 ```
-gem 'tomtom_webfleet_connect', git: 'https://github.com/maxime-lenne/tomtom_webfleet_connect.git'
+gem 'tomtom_webfleet_connect', git: 'https://github.com/maxime-lenne/tomtom_webfleet_connect_gem.git'
 ```
 
 ##Add model to your app database :
