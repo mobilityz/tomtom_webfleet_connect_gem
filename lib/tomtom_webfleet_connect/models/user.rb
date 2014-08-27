@@ -27,14 +27,14 @@ module TomtomWebfleetConnect
       #not used
       def get_base_url(api)
         #TomtomWebfleetConnect::API
-        return api.get_url_with_parmeters + "&username=#{name}" + "&password=#{password}" 
+        return api.get_url_with_parameters + "&username=#{name}" + "&password=#{password}"
       end
 
       #not used yet
       #valid existance of user, and valid password on tomtom webfleet
       def is_valid_tomtom_user?(api)
         #FIXME
-        url = api.get_url_with_parmeters + "&username=#{name}" + "&password=#{password}"
+        url = api.get_url_with_parameters + "&username=#{name}" + "&password=#{password}"
         request = TomtomWebfleetConnect::TomtomRequest.new
         response = request.send_request(url)
         #return 1101,User invalid (does not exist) if invalid

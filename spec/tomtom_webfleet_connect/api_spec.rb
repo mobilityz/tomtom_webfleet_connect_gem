@@ -86,7 +86,7 @@ describe TomtomWebfleetConnect::API do
     end
     
     it "get API url with parameters" do
-      expect(client.get_url_with_parmeters).to eq(@parameters_url)
+      expect(client.get_url_with_parameters).to eq(@parameters_url)
     end
     
     it "get base_url with new user" do

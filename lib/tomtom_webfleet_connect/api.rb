@@ -24,18 +24,19 @@ module TomtomWebfleetConnect
       if user.nil?
         response = TomtomWebfleetConnect::TomtomResponse.new
         response.http_status_code = 200
-        response.http_status_message = "OK"
+        response.http_status_message = 'OK'
         response.response_body = {}
         response.response_code = 8011
-        response.response_message = "request quota reached"
+        response.response_message = 'request quota reached'
         response.error = true
         response.success = false
-        return response
       else
         url = get_method_url(method, user)
         request = TomtomWebfleetConnect::TomtomRequest.new
-        return request.send_request(url, options)
+        response =  request.send_request(url, options)
       end
+
+      response
     end
 
 
@@ -68,12 +69,12 @@ module TomtomWebfleetConnect
       "https://csv.business.tomtom.com/extern"
     end
     
-    def get_url_with_parmeters
+    def get_url_with_parameters
       get_root_url + "?" + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}"
     end
 
     def get_base_url(user)
-        return get_url_with_parmeters + "&username=#{user.name}" + "&password=#{user.password}"
+        return get_url_with_parameters + "&username=#{user.name}" + "&password=#{user.password}"
     end
 
     def get_method_url(method, user)
