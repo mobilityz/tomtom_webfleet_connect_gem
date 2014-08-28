@@ -165,12 +165,22 @@ describe TomtomWebfleetConnect::Models::Order do
 
     end
 
-    it "clearOrdersExtern" do
+    xit "clearOrdersExtern" do
+
+      TomtomWebfleetConnect::Models::TomtomMethod.create! name: "clearOrdersExtern", quota:300, quota_delay: 30
+      response = client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'] ,true))
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
 
     end
 
-    xit "showOrderReportExtern" do
-
+    it "showOrderReportExtern" do
+      
     end
 
     xit "showOrderWaypoints" do

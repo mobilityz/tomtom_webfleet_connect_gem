@@ -394,13 +394,20 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def clearOrdersExtern(objectno, mark_deleted = false)
+      def self.clearOrdersExtern(objectno, deleted_within_webfleet = false)
         defaults={
             action: 'clearOrdersExtern',
             objectno: objectno[0...10],
-            mark_deleted: (mark_deleted ? '1' : '0' )
+            mark_deleted: (deleted_within_webfleet ? '1' : '0' )
         }
-        options = defaults.merge(options)
+      end
+
+      def clearOrdersExtern(deleted_within_webfleet = false)
+        defaults={
+            action: 'clearOrdersExtern',
+            objectno: @number,
+            mark_deleted: (deleted_within_webfleet ? '1' : '0' )
+        }
       end
 
       # TODO Implement showOrderReportExtern function
