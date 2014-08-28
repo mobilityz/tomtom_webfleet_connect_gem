@@ -14,6 +14,10 @@ module TomtomWebfleetConnect
       @request_url = String.new
     end
 
+    def to_s
+      "<-- TomtomRequest\nrequest_url: #{request_url}\nresponse: #{response}\n-->"
+    end
+
     def send_request(url, options = {})
       @request_url = add_options_to_url(url, options.except(:action))
       puts @request_url

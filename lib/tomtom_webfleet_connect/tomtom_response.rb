@@ -11,6 +11,10 @@ module TomtomWebfleetConnect
     def initialize
       
     end
+
+    def to_s
+      "<-- TomtomResponse\nhttp_status_code: #{@http_status_code}\nhttp_status_message: #{@http_status_message}\nresponse_code: #{@response_code}\nresponse_message: #{response_message}\nresponse_body: #{response_body}\nerror: #{error}\nsuccess: #{success}\n-->\n"
+    end
     
     def has_operation_response_code?
       not @response_code.empty?

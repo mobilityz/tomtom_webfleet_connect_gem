@@ -48,7 +48,7 @@ module TomtomWebfleetConnect
                     :state,
                     :contact, :phone_number, :planned_date_execution, :destination_address, :destination_coordinates, :desired_time_arrival, :time_tolerance, :lead_time
 
-      validates :number, :message, :type, :presence => true
+      # validates :number, :message, :type, :presence => true
 
       public
 
@@ -61,16 +61,42 @@ module TomtomWebfleetConnect
       end
 
       def to_s
-        "#{@number} #{@message} #{@type}"
+        "<-- Order\norderid: #{@number}\nordertext: #{@message}\nordertype: #{@type}\n-->\n"
       end
 
       # ______________________________________________________
       # CLASS METHOD
       # ______________________________________________________
 
-      # TODO implement create function
-      def self.create(api)
-        api.send_request(sendOrderExtern)
+      def self.create(api, objectno, orderid, ordertext)
+
+        order = Order.new(api, orderid, ordertext, objectno)
+
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota:300, quota_delay: 30
+        response= api.send_request(order.sendOrderExtern)
+
+        if response.error
+          order=nil
+          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+        return order
+      end
+
+      def self.create_with_destination(api, objectno, orderid, ordertext, destination_address)
+
+        order = Order.new(api, orderid, ordertext, objectno)
+        order.destination_address = destination_address
+
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota:300, quota_delay: 30
+        response= api.send_request(order.sendDestinationOrderExtern(destination_address))
+
+        if response.error
+          order=nil
+          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+        return order
       end
 
       # TODO Find by uid/date/... method -> showOrderReportExtern
@@ -83,9 +109,23 @@ module TomtomWebfleetConnect
 
       end
 
+      # TODO implement all function
+      def self.all_for_object(api, objectno)
+        orders= []
+
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota:6, quota_delay: 1
+        response= api.send_request(Order.showOrderReportExtern({objectno: objectno}))
+
+      end
+
       # TODO implement where function with date
       def self.where(api)
 
+      end
+
+      def self.generate_orderid
+        o = [('a'..'z'), ('A'..'Z')].map { |i| i.to_a }.flatten
+        orderid = (0...20).map { o[rand(o.length)] }.join
       end
 
       # ______________________________________________________
@@ -93,11 +133,11 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def cancel
-        @api.send_request(cancelOrderExtern)
+        @api.send_request(cancelOrderExtern(@number))
       end
 
       def delete
-        @api.send_request(deleteOrderExtern(1))
+        @api.send_request(deleteOrderExtern(true))
       end
 
       # TODO implement send function
@@ -107,8 +147,7 @@ module TomtomWebfleetConnect
       end
 
 
-
-      private
+      # private
 
       # -------------------------------------
       # WEBFLEET.connect-en-1.21.1 page 80
@@ -125,9 +164,22 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
+      # def self.sendOrderExtern(objectno, orderid, ordertext, options = {})
+      #   defaults={
+      #       action: 'sendOrderExtern',
+      #       objectno: objectno[0...10],
+      #       orderid: orderid[0...20],
+      #       ordertext: ordertext[0...500]
+      #   }
+      #   options = defaults.merge(options)
+      # end
+
       def sendOrderExtern(options = {})
         defaults={
-            action: 'sendOrderExtern'
+            action: 'sendOrderExtern',
+            objectno: @objectno,
+            orderid: @number,
+            ordertext: @message
         }
         options = defaults.merge(options)
       end
@@ -145,12 +197,22 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def sendDestinationOrderExtern(objectno, orderid, ordertext, options = {})
+      # def self.sendDestinationOrderExtern(objectno, orderid, ordertext, options = {})
+      #   defaults={
+      #       action: 'sendDestinationOrderExtern',
+      #       objectno: objectno[0...10],
+      #       orderid: orderid[0...20],
+      #       ordertext: ordertext[0...500]
+      #   }
+      #   options = defaults.merge(options)
+      # end
+
+      def sendDestinationOrderExtern(options = {})
         defaults={
             action: 'sendDestinationOrderExtern',
-            objectno: objectno[0...10],
-            orderid: orderid[0...20],
-            ordertext: ordertext[0...500]
+            objectno: @objectno,
+            orderid: @number,
+            ordertext: @message
         }
         options = defaults.merge(options)
       end
@@ -164,6 +226,15 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
+      # def self.updateOrderExtern(orderid, ordertext, options = {})
+      #   defaults={
+      #       action: 'updateOrderExtern',
+      #       orderid: orderid[0...20],
+      #       ordertext: ordertext[0...500]
+      #   }
+      #   options = defaults.merge(options)
+      # end
+
       def updateOrderExtern(options = {})
         defaults={
             action: 'updateOrderExtern',
@@ -182,12 +253,22 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
+      # def self.updateDestinationOrderExtern(orderid, options = {})
+      #   defaults={
+      #       action: 'updateDestinationOrderExtern',
+      #       orderid: orderid[0...20]
+      #   }
+      #   options = defaults.merge(options)
+      # end
+
       def updateDestinationOrderExtern(options = {})
         defaults={
             action: 'updateDestinationOrderExtern',
-            orderid: @number
+            orderid: @number,
+            ordertext: @message
         }
-        options = defaults.merge(options)
+        defaults_with_addr = defaults.merge(@destination_address)
+        options = defaults_with_addr.merge(options)
       end
 
       # TODO Implement insertDestinationOrderExtern function
@@ -201,12 +282,12 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def insertDestinationOrderExtern(options = {})
+      def insertDestinationOrderExtern(orderid, ordertext, ordertype = Order::TYPES::SERVICE, options = {})
         defaults={
             action: 'insertDestinationOrderExtern',
-            orderid: @number,
-            ordertext: @message,
-            ordertype: @type
+            orderid: orderid[0...20],
+            ordertext: ordertext[0...500],
+            ordertype: ordertype
         }
         options = defaults.merge(options)
       end
@@ -221,6 +302,13 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
+      # def self.cancelOrderExtern(orderid)
+      #   defaults={
+      #       action: 'cancelOrderExtern',
+      #       orderid: orderid[0...20]
+      #   }
+      # end
+
       def cancelOrderExtern
         defaults={
             action: 'cancelOrderExtern',
@@ -239,10 +327,10 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def assignOrderExtern(options = {})
+      def assignOrderExtern(orderid, options = {})
         defaults={
             action: 'assignOrderExtern',
-            orderid: @number
+            orderid: orderid[0...20]
         }
         options = defaults.merge(options)
       end
@@ -260,11 +348,11 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def reassignOrderExtern(objectid, options = {})
+      def reassignOrderExtern(objectid, orderid,  options = {})
         defaults={
             action: 'reassignOrderExtern',
-            orderid: @number,
-            objectid: objectid
+            objectid: objectid[0...10],
+            orderid: orderid[0...20],
         }
         options = defaults.merge(options)
       end
@@ -280,11 +368,19 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def deleteOrderExtern(mark_deleted = 0)
+      # def self.deleteOrderExtern(orderid, mark_deleted = false)
+      #   defaults={
+      #       action: 'deleteOrderExtern',
+      #       orderid: orderid[0...20],
+      #       mark_deleted: (mark_deleted ? '1' : '0' )
+      #   }
+      # end
+
+      def deleteOrderExtern(deleted_within_webfleet = false)
         defaults={
             action: 'deleteOrderExtern',
             orderid: @number,
-            mark_deleted: mark_deleted
+            mark_deleted: (deleted_within_webfleet ? '1' : '0' )
         }
       end
 
@@ -298,11 +394,11 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def clearOrdersExtern(objectno , mark_deleted = 0)
+      def clearOrdersExtern(objectno, mark_deleted = false)
         defaults={
             action: 'clearOrdersExtern',
-            objectno: objectno,
-            mark_deleted: mark_deleted
+            objectno: objectno[0...10],
+            mark_deleted: (mark_deleted ? '1' : '0' )
         }
         options = defaults.merge(options)
       end
@@ -319,7 +415,7 @@ module TomtomWebfleetConnect
       # The following other parameters are required if orderid is not indicated:
       # - Date range filter parameters
       #
-      def showOrderReportExtern(options = {})
+      def self.showOrderReportExtern(options = {})
         defaults={
             action: 'showOrderReportExtern'
         }
@@ -348,5 +444,8 @@ module TomtomWebfleetConnect
 
 
       end
+  end
+
+  class CreateOrderError < StandardError
   end
 end
