@@ -180,7 +180,7 @@ describe TomtomWebfleetConnect::Models::Order do
     end
 
     it "showOrderReportExtern" do
-      
+
     end
 
     xit "showOrderWaypoints" do
