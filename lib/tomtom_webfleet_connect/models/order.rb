@@ -1,4 +1,5 @@
-
+require 'tomtom_webfleet_connect/models/addresse'
+require 'tomtom_webfleet_connect/models/tomtom_object'
 
 module TomtomWebfleetConnect
   module Models
@@ -22,85 +23,136 @@ module TomtomWebfleetConnect
       #   ]
       # end
 
-      module STATES
-        ALL = [
-            ['null', NONE = 'null'],
-            ['Arrived at destination', ARRIVED_AT_DESTINATION = '202'],
-            ['Work started', WORK_STARTED = '203'],
-            ['Work finished', WORK_FINISHED = '204'],
-            ['Departed from destination', DEPARTED_FROM_DESTINATION = '205']
-        ]
-      end
+      # module STATES
+      #   ALL = [
+      #       ['null', NONE = 'null'],
+      #       ['Arrived at destination', ARRIVED_AT_DESTINATION = '202'],
+      #       ['Work started', WORK_STARTED = '203'],
+      #       ['Work finished', WORK_FINISHED = '204'],
+      #       ['Departed from destination', DEPARTED_FROM_DESTINATION = '205']
+      #   ]
+      # end
 
-      module AUTOMATIONS
-        ALL = [
-            ['accept the order', ACCEPT_ORDER = '1'],
-            ['start the order', START_ORDER = '2'],
-            ['navigate to the order destination', NAVIGATE_TO_ORDER_DESTINATION = '3'],
-            ['skip displaying the route summary screen', SKIP_DISPLAY_ROUTE = '4'],
-            ['delete the order after it has been finished', DELETE_ORDER_AFTER_FINISHED = '5'],
-            ['suppress the continue with next order screen', SUPPRESS_CONTINUE_SCREEN = '6']
-        ]
-      end
+      # module AUTOMATIONS
+      #   ALL = [
+      #       ['accept the order', ACCEPT_ORDER = '1'],
+      #       ['start the order', START_ORDER = '2'],
+      #       ['navigate to the order destination', NAVIGATE_TO_ORDER_DESTINATION = '3'],
+      #       ['skip displaying the route summary screen', SKIP_DISPLAY_ROUTE = '4'],
+      #       ['delete the order after it has been finished', DELETE_ORDER_AFTER_FINISHED = '5'],
+      #       ['suppress the continue with next order screen', SUPPRESS_CONTINUE_SCREEN = '6']
+      #   ]
+      # end
 
       # WEBFLEET.connect-en-1.21.1 page 15
-      attr_accessor :number, :message, :type, :objectno, :api,
-                    :state,
-                    :contact, :phone_number, :planned_date_execution, :destination_address, :destination_coordinates, :desired_time_arrival, :time_tolerance, :lead_time
+      attr_accessor :orderid, :ordertext, :ordertype, :orderdate,
+                    :planned_arrival_time, :estimated_arrival_time, :arrivaltolerance, :delay_warnings, :notify_enabled, :notify_leadtime, :waypointcount,
+                    :api, :tomtom_object, :adresse, :state, :contact, :driver
 
-      # validates :number, :message, :type, :presence => true
 
       public
 
-      def initialize(api, number, message, objectno, type= Order::TYPES::SERVICE)
-        @api= api
-        @number= number[0...20]
-        @message= message[0...500]
-        @objectno= objectno[0...10]
-        @type= type
+      def initialize(api, params = {})
+        @api = api
+
+        @orderid = params[:orderid][0...20] if params[:orderid].present?
+        @ordertext = params[:ordertext][0...500] if params[:ordertext].present?
+        @ordertype = params[:ordertype] if params[:ordertype].present?
+        @orderdate = params[:orderdate] if params[:orderdate].present?
+
+        @planned_arrival_time = params[:planned_arrival_time] if params[:planned_arrival_time].present?
+        @estimated_arrival_time = params[:estimated_arrival_time] if params[:estimated_arrival_time].present?
+        @arrivaltolerance = params[:arrivaltolerance] if params[:arrivaltolerance].present?
+        @delay_warnings = params[:delay_warnings] if params[:delay_warnings].present?
+        @notify_enabled = params[:notify_enabled] if params[:notify_enabled].present?
+        @notify_leadtime = params[:notify_leadtime] if params[:notify_leadtime].present?
+        @waypointcount = params[:waypointcount] if params[:waypointcount].present?
+
+        if params[:objectno].present? or params[:objectuid].present?
+          @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(api, params)
+        end
+
+        @adresse = TomtomWebfleetConnect::Models::Addresse.new(api, params)
+        @state = OrderState.new(params)
+        @contact = OrderContact.new(params)
+        @driver = TomtomWebfleetConnect::Models::Driver.new(api, params)
       end
 
       def to_s
-        "<-- Order\norderid: #{@number}\nordertext: #{@message}\nordertype: #{@type}\n-->\n"
+        "<-- Order\norderid: #{@orderid}\nordertext: #{@ordertext}\nordertype: #{@ordertype}\n-->\n"
       end
 
       # ______________________________________________________
       # CLASS METHOD
       # ______________________________________________________
 
-      def self.create(api, objectno, orderid, ordertext)
+      # Create Order object and send on Webfleet.
+      def self.create(api, tomtom_object, params = {})
 
-        order = Order.new(api, orderid, ordertext, objectno)
+        order = TomtomWebfleetConnect::Models::Order.new(api, params)
+        order.tomtom_object = tomtom_object
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota:300, quota_delay: 30
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota: 300, quota_delay: 30
         response= api.send_request(order.sendOrderExtern)
 
         if response.error
-          order=nil
+          order = nil
           raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
         end
 
         return order
       end
 
-      def self.create_with_destination(api, objectno, orderid, ordertext, destination_address)
 
-        order = Order.new(api, orderid, ordertext, objectno)
-        order.destination_address = destination_address
-
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota:300, quota_delay: 30
-        response= api.send_request(order.sendDestinationOrderExtern(destination_address))
-
-        if response.error
-          order=nil
-          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
-        end
-
-        return order
-      end
+      # # Create Order object without send on Webfleet.
+      # def self.new_with_all_tomtom_parameters(api, params = {})
+      #   order= nil
+      #
+      #   unless params.blank?
+      #     order= TomtomWebfleetConnect::Models::Order.new(api, params[:orderid], params[:ordertext], params[:objectno], params[:ordertype])
+      #     order.orderdate= params[:orderdate]
+      #
+      #   end
+      #
+      #   return order
+      # end
+      #
+      # # Create Order object with destination address and send on Webfleet.
+      # # The address has to be a hash of the shape: {latitude: '', longitude: '', country: '', zip: '', city: '', street: ''}
+      # def self.create_with_destination(api, objectno, orderid, ordertext, destination_address, ordertype= Order::TYPES::SERVICE)
+      #
+      #   order = TomtomWebfleetConnect::Models::Order.new(api, orderid, ordertext, objectno, ordertype)
+      #   order.destination_address = destination_address
+      #
+      #   TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota:300, quota_delay: 30
+      #   response= api.send_request(order.sendDestinationOrderExtern(destination_address))
+      #
+      #   if response.error
+      #     order=nil
+      #     raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+      #   end
+      #
+      #   return order
+      # end
 
       # TODO Find by uid/date/... method -> showOrderReportExtern
-      def self.find(api)
+      def self.find(api, order_params = {}, search_params = {})
+
+      end
+
+      def self.find_with_id(api, orderid)
+
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
+        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
+
+        if response.error
+          order = nil
+          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          order = TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
+        end
+
+        return order
 
       end
 
@@ -113,8 +165,18 @@ module TomtomWebfleetConnect
       def self.all_for_object(api, objectno)
         orders= []
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota:6, quota_delay: 1
-        response= api.send_request(Order.showOrderReportExtern({objectno: objectno}))
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
+        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({objectno: objectno}))
+
+        if response.error
+          raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          response.response_body.each do |line_order|
+            puts line_order
+          end
+        end
+
+        return orders
 
       end
 
@@ -133,7 +195,7 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def cancel
-        @api.send_request(cancelOrderExtern(@number))
+        @api.send_request(cancelOrderExtern)
       end
 
       def delete
@@ -177,9 +239,9 @@ module TomtomWebfleetConnect
       def sendOrderExtern(options = {})
         defaults={
             action: 'sendOrderExtern',
-            objectno: @objectno,
-            orderid: @number,
-            ordertext: @message
+            objectno: @tomtom_object.objectno,
+            orderid: @orderid,
+            ordertext: @ordertext
         }
         options = defaults.merge(options)
       end
@@ -210,9 +272,9 @@ module TomtomWebfleetConnect
       def sendDestinationOrderExtern(options = {})
         defaults={
             action: 'sendDestinationOrderExtern',
-            objectno: @objectno,
-            orderid: @number,
-            ordertext: @message
+            objectno: @tomtom_object.objectno,
+            orderid: @orderid,
+            ordertext: @ordertext
         }
         options = defaults.merge(options)
       end
@@ -238,8 +300,8 @@ module TomtomWebfleetConnect
       def updateOrderExtern(options = {})
         defaults={
             action: 'updateOrderExtern',
-            orderid: @number,
-            ordertext: @message
+            orderid: @orderid,
+            ordertext: @ordertext
         }
         options = defaults.merge(options)
       end
@@ -264,8 +326,8 @@ module TomtomWebfleetConnect
       def updateDestinationOrderExtern(options = {})
         defaults={
             action: 'updateDestinationOrderExtern',
-            orderid: @number,
-            ordertext: @message
+            orderid: @orderid,
+            ordertext: @ordertext
         }
         defaults_with_addr = defaults.merge(@destination_address)
         options = defaults_with_addr.merge(options)
@@ -312,7 +374,7 @@ module TomtomWebfleetConnect
       def cancelOrderExtern
         defaults={
             action: 'cancelOrderExtern',
-            orderid: @number
+            orderid: @orderid
         }
       end
 
@@ -348,7 +410,7 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def reassignOrderExtern(objectid, orderid,  options = {})
+      def reassignOrderExtern(objectid, orderid, options = {})
         defaults={
             action: 'reassignOrderExtern',
             objectid: objectid[0...10],
@@ -379,8 +441,8 @@ module TomtomWebfleetConnect
       def deleteOrderExtern(deleted_within_webfleet = false)
         defaults={
             action: 'deleteOrderExtern',
-            orderid: @number,
-            mark_deleted: (deleted_within_webfleet ? '1' : '0' )
+            orderid: @orderid,
+            mark_deleted: (deleted_within_webfleet ? '1' : '0')
         }
       end
 
@@ -398,17 +460,17 @@ module TomtomWebfleetConnect
         defaults={
             action: 'clearOrdersExtern',
             objectno: objectno[0...10],
-            mark_deleted: (deleted_within_webfleet ? '1' : '0' )
+            mark_deleted: (deleted_within_webfleet ? '1' : '0')
         }
       end
 
-      def clearOrdersExtern(deleted_within_webfleet = false)
-        defaults={
-            action: 'clearOrdersExtern',
-            objectno: @number,
-            mark_deleted: (deleted_within_webfleet ? '1' : '0' )
-        }
-      end
+      # def clearOrdersExtern(deleted_within_webfleet = false)
+      #   defaults={
+      #       action: 'clearOrdersExtern',
+      #       objectno: @orderid,
+      #       mark_deleted: (deleted_within_webfleet ? '1' : '0' )
+      #   }
+      # end
 
       # TODO Implement showOrderReportExtern function
       # Shows a list of orders that match the search parameters. Each entry shows the order
@@ -428,6 +490,13 @@ module TomtomWebfleetConnect
         }
         options = defaults.merge(options)
       end
+
+      # def showOrderReportExtern(options = {})
+      #   defaults={
+      #       action: 'showOrderReportExtern'
+      #   }
+      #   options = defaults.merge(options)
+      # end
 
       # TODO Implement showOrderWaypoints function
       # This action retrieves the waypoints for an itinerary order with additional information
@@ -450,9 +519,53 @@ module TomtomWebfleetConnect
       end
 
 
-      end
+    end
   end
 
   class CreateOrderError < StandardError
   end
+  class AllOrderForObjectError < StandardError
+  end
+
+  class OrderState
+
+    attr_accessor :orderstate, :orderstate_time, :orderstate_longitude, :orderstate_latitude, :orderstate_postext, :orderstate_msgtext
+
+    public
+
+    def initialize(params = {})
+
+      @orderstate = params[:orderstate] if params[:orderstate].present?
+      @orderstate_time = params[:orderstate_time] if params[:orderstate_time].present?
+      @orderstate_longitude = params[:orderstate_longitude] if params[:orderstate_longitude].present?
+      @orderstate_latitude = params[:orderstate_latitude] if params[:orderstate_latitude].present?
+      @orderstate_postext = params[:orderstate_postext] if params[:orderstate_postext].present?
+      @orderstate_msgtext = params[:orderstate_msgtext] if params[:orderstate_msgtext].present?
+
+    end
+
+    def to_s
+      ""
+    end
+
+  end
+
+  class OrderContact
+
+    attr_accessor :contact, :contacttel
+
+    public
+
+    def initialize(params = {})
+      @contact = params[:contact] if params[:contact].present?
+      @contacttel = params[:contacttel] if params[:contacttel].present?
+    end
+
+    def to_s
+      ""
+    end
+
+  end
+
+
 end

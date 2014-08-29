@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'tomtom_webfleet_connect/models/tomtom_object'
 
 describe TomtomWebfleetConnect::Models::Order do
 
@@ -39,6 +40,33 @@ describe TomtomWebfleetConnect::Models::Order do
 
   end
 
+  describe "Order class methods" do
+
+    before do
+      tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      @order = TomtomWebfleetConnect::Models::Order.create(client, tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order class methods text test'})
+      # @order_with_destination = TomtomWebfleetConnect::Models::Order.create_with_destination(client, ENV['GPS-TEST'], '002_order_test_gem', 'Order text test', {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
+      puts '----------------------------------------'
+    end
+
+    after do
+      # @order.delete
+    end
+
+    xit "all_for_object" do
+      orders= TomtomWebfleetConnect::Models::Order.all_for_object(client, ENV['GPS-TEST'])
+
+
+    end
+
+    it "find_with_id" do
+      order= TomtomWebfleetConnect::Models::Order.find_with_id(client, @order.orderid)
+
+
+    end
+
+  end
+
   describe "Tomtom methods" do
 
     before do
@@ -53,7 +81,8 @@ describe TomtomWebfleetConnect::Models::Order do
 
     xit "sendOrderExtern" do
 
-      order= TomtomWebfleetConnect::Models::Order.new(client, TomtomWebfleetConnect::Models::Order.generate_orderid, 'sendOrderExtern test', ENV['GPS-TEST'])
+      order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'sendOrderExtern test'})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
 
       TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota:300, quota_delay: 30
       response = client.send_request(order.sendOrderExtern)
@@ -68,7 +97,9 @@ describe TomtomWebfleetConnect::Models::Order do
 
     xit "sendDestinationOrderExtern" do
 
-      order= TomtomWebfleetConnect::Models::Order.new(client, TomtomWebfleetConnect::Models::Order.generate_orderid, 'sendOrderExtern test', ENV['GPS-TEST'])
+      tomtom_object= TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'sendDestinationOrderExtern test'})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
 
       TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota:300, quota_delay: 30
       response = client.send_request(order.sendDestinationOrderExtern({latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'}))
@@ -121,7 +152,8 @@ describe TomtomWebfleetConnect::Models::Order do
 
     xit "cancelOrderExtern" do
 
-      order= TomtomWebfleetConnect::Models::Order.new(client, TomtomWebfleetConnect::Models::Order.generate_orderid, 'sendOrderExtern test', ENV['GPS-TEST'])
+      order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'cancelOrderExtern test'})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
 
       TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota:300, quota_delay: 30
       client.send_request(order.sendOrderExtern)
@@ -148,7 +180,8 @@ describe TomtomWebfleetConnect::Models::Order do
 
     xit "deleteOrderExtern" do
 
-      order= TomtomWebfleetConnect::Models::Order.new(client, TomtomWebfleetConnect::Models::Order.generate_orderid, 'sendOrderExtern test', ENV['GPS-TEST'])
+      order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'deleteOrderExtern test'})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
 
       TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota:300, quota_delay: 30
       client.send_request(order.sendOrderExtern)
@@ -179,8 +212,20 @@ describe TomtomWebfleetConnect::Models::Order do
 
     end
 
-    it "showOrderReportExtern" do
-      
+    xit "showOrderReportExtern (retrieve all orders for the current mouth)" do
+
+      TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota:6, quota_delay: 1
+      response = client.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({range_pattern: 'm0'}))
+
+      puts response
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+
     end
 
     xit "showOrderWaypoints" do
