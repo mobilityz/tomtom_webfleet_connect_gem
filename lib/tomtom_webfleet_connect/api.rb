@@ -78,7 +78,7 @@ module TomtomWebfleetConnect
     end
 
     def get_method_url(method, user)
-      puts user.to_json
+      # puts user.to_json
       counter = TomtomWebfleetConnect::Models::MethodCounter.where("user_id = ? and tomtom_method_id = ?", user.id, method.id).first
       if counter.nil?
         counter = TomtomWebfleetConnect::Models::MethodCounter.create user_id: user.id, tomtom_method_id: method.id
@@ -91,7 +91,7 @@ module TomtomWebfleetConnect
           counter.increment_counter
         end
       end
-      puts counter.to_json
+      # puts counter.to_json
       get_base_url(user) + "&action=#{method.name}"
     end
 

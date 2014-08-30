@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'tomtom_webfleet_connect/models/tomtom_object'
+require 'tomtom_webfleet_connect/models/addresse'
 
 describe TomtomWebfleetConnect::Models::Order do
 
@@ -46,23 +47,28 @@ describe TomtomWebfleetConnect::Models::Order do
       tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
       @order = TomtomWebfleetConnect::Models::Order.create(client, tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order class methods text test'})
       # @order_with_destination = TomtomWebfleetConnect::Models::Order.create_with_destination(client, ENV['GPS-TEST'], '002_order_test_gem', 'Order text test', {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
-      puts '----------------------------------------'
     end
 
     after do
-      # @order.delete
+      @order.delete
     end
 
     xit "all_for_object" do
       orders= TomtomWebfleetConnect::Models::Order.all_for_object(client, ENV['GPS-TEST'])
 
-
+      expect(orders.size).to be >= 1
     end
 
     it "find_with_id" do
       order= TomtomWebfleetConnect::Models::Order.find_with_id(client, @order.orderid)
 
+      expect(order).to_not be_nil
+    end
 
+    it "generate_orderid" do
+      orderid= TomtomWebfleetConnect::Models::Order.generate_orderid
+
+      expect(orderid.size).to be <= 20
     end
 
   end
@@ -70,16 +76,19 @@ describe TomtomWebfleetConnect::Models::Order do
   describe "Tomtom methods" do
 
     before do
-      # @order = TomtomWebfleetConnect::Models::Order.create(client, ENV['GPS-TEST'], '001_order_test_gem', 'Order text test')
-      # @order_with_destination = TomtomWebfleetConnect::Models::Order.create_with_destination(client, ENV['GPS-TEST'], '002_order_test_gem', 'Order text test', {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
-      puts '----------------------------------------'
+      tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      @order = TomtomWebfleetConnect::Models::Order.create(client, tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order text test'})
+
+      addresse= TomtomWebfleetConnect::Models::Addresse.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
+      @order_with_destination = TomtomWebfleetConnect::Models::Order.create_with_destination(client, tomtom_object, addresse ,{orderid: '001_order_test_gem', ordertext: 'Order text test'})
     end
 
     after do
-      # @order.delete
+      @order.delete
+      @order_with_destination.delete
     end
 
-    xit "sendOrderExtern" do
+    it "sendOrderExtern" do
 
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'sendOrderExtern test'})
       order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
@@ -95,14 +104,10 @@ describe TomtomWebfleetConnect::Models::Order do
       expect(response.success).to eq(true)
     end
 
-    xit "sendDestinationOrderExtern" do
-
-      tomtom_object= TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
-      order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'sendDestinationOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+    it "sendDestinationOrderExtern" do
 
       TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota:300, quota_delay: 30
-      response = client.send_request(order.sendDestinationOrderExtern({latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'}))
+      response = client.send_request(@order.sendDestinationOrderExtern({latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'}))
 
       expect(response.http_status_code).to eq(200)
       expect(response.http_status_message).to eq("OK")
@@ -113,7 +118,7 @@ describe TomtomWebfleetConnect::Models::Order do
 
     end
 
-    xit "updateOrderExtern" do
+    it "updateOrderExtern" do
 
       @order.message = "update order text submitted with sendOrderExtern."
 
@@ -129,10 +134,10 @@ describe TomtomWebfleetConnect::Models::Order do
 
     end
 
-    xit "updateDestinationOrderExtern" do
+    it "updateDestinationOrderExtern" do
 
       @order_with_destination.message = "update order text submitted with sendDestinationOrderExtern."
-      @order_with_destination.destination_address = {latitude: '48858550', longitude: '2294492', country: 'FR', zip: '75007', city: 'Paris', street: 'Avenue Anatole 5'}
+      @order_with_destination.destination.adresse = TomtomWebfleetConnect::Models::Addresse.new({latitude: '48858550', longitude: '2294492', country: 'FR', zip: '75007', city: 'Paris', street: 'Avenue Anatole 5'})
 
       TomtomWebfleetConnect::Models::TomtomMethod.create! name: "updateDestinationOrderExtern", quota:300, quota_delay: 30
       response = client.send_request(@order_with_destination.updateDestinationOrderExtern)

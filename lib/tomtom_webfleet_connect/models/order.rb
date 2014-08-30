@@ -1,5 +1,6 @@
 require 'tomtom_webfleet_connect/models/addresse'
 require 'tomtom_webfleet_connect/models/tomtom_object'
+require 'tomtom_webfleet_connect/models/driver'
 
 module TomtomWebfleetConnect
   module Models
@@ -119,31 +120,27 @@ module TomtomWebfleetConnect
       #
       # # Create Order object with destination address and send on Webfleet.
       # # The address has to be a hash of the shape: {latitude: '', longitude: '', country: '', zip: '', city: '', street: ''}
-      # def self.create_with_destination(api, objectno, orderid, ordertext, destination_address, ordertype= Order::TYPES::SERVICE)
-      #
-      #   order = TomtomWebfleetConnect::Models::Order.new(api, orderid, ordertext, objectno, ordertype)
-      #   order.destination_address = destination_address
-      #
-      #   TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota:300, quota_delay: 30
-      #   response= api.send_request(order.sendDestinationOrderExtern(destination_address))
-      #
-      #   if response.error
-      #     order=nil
-      #     raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
-      #   end
-      #
-      #   return order
-      # end
+      def self.create_with_destination(api, tomtom_object, destination, params = {})
 
-      # TODO Find by uid/date/... method -> showOrderReportExtern
-      def self.find(api, order_params = {}, search_params = {})
+        order = TomtomWebfleetConnect::Models::Order.new(api, params)
+        order.tomtom_object = tomtom_object
 
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota: 300, quota_delay: 30
+        response= api.send_request(order.sendDestinationOrderExtern(destination.to_hash))
+
+        if response.error
+          order = nil
+          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+        return order
       end
 
-      def self.find_with_id(api, orderid)
+      # TODO Find by uid/date/... method -> showOrderReportExtern
+      def self.find(api, search_params = {})
 
         TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
-        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
+        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(search_params))
 
         if response.error
           order = nil
@@ -153,7 +150,10 @@ module TomtomWebfleetConnect
         end
 
         return order
+      end
 
+      def self.find_with_id(api, orderid)
+        TomtomWebfleetConnect::Models::Order.find(api, {orderid: orderid})
       end
 
       # TODO implement all function
@@ -172,7 +172,7 @@ module TomtomWebfleetConnect
           raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
         else
           response.response_body.each do |line_order|
-            puts line_order
+            # puts line_order
           end
         end
 
@@ -195,10 +195,12 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def cancel
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "cancelOrderExtern", quota: 300, quota_delay: 30
         @api.send_request(cancelOrderExtern)
       end
 
       def delete
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "deleteOrderExtern", quota: 300, quota_delay: 30
         @api.send_request(deleteOrderExtern(true))
       end
 
