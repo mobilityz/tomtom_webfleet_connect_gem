@@ -25,25 +25,31 @@ class CreateTomtomWebfleetConnectTables < ActiveRecord::Migration
       t.timestamps
     end
 
-    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'createQueueExtern', quota: 10, quota_delay: 24 * 60
-    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'deleteQueueExtern', quota: 10, quota_delay: 24 * 60
+    # Message queues
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'createQueueExtern', quota: 10, quota_delay: 1440
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'deleteQueueExtern', quota: 10, quota_delay: 1440
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'popQueueMessagesExtern', quota: 10, quota_delay: 1
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'ackQueueMessagesExtern', quota: 10, quota_delay: 1
-    #Objects
+    # Objects
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'showObjectReportExtern', quota: 6, quota_delay: 1
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'showVehicleReportExtern', quota: 10, quota_delay: 1
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'showNearestVehicles', quota: 10, quota_delay: 1
-    #Orders
+    # Orders
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'sendOrderExtern', quota: 300, quota_delay: 30
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'sendDestinationOrderExtern', quota: 300, quota_delay: 30
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'updateOrderExtern', quota: 300, quota_delay: 30
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'updateDestinationOrderExtern', quota: 300, quota_delay: 30
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'insertDestinationOrderExtern', quota: 300, quota_delay: 30
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'cancelOrderExtern', quota: 300, quota_delay: 30
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'assignOrderExtern', quota: 300, quota_delay: 30
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'reassignOrderExtern', quota: 300, quota_delay: 30
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'deleteOrderExtern', quota: 300, quota_delay: 30
+    TomtomWebfleetConnect::Models::TomtomMethod.create name: 'clearOrdersExtern', quota: 300, quota_delay: 30
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'showOrderReportExtern', quota: 6, quota_delay: 1
-    #Drivers
+    # Drivers
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'showDriverReportExtern', quota: 10, quota_delay: 1
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'insertDriverExtern', quota: 10, quota_delay: 1
-    #Geocoding and routing
+    # Geocoding and routing
     TomtomWebfleetConnect::Models::TomtomMethod.create name: 'calcRouteSimpleExtern', quota: 6, quota_delay: 1
 
     # execute ("insert into tomtom_webfleet_connect_methods (name, quota, quota_delay, created_at, updated_at) values ('createQueueExtern', 10, 24 * 60, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)")

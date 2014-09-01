@@ -94,7 +94,6 @@ module TomtomWebfleetConnect
         order = TomtomWebfleetConnect::Models::Order.new(api, params)
         order.tomtom_object = tomtom_object
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendOrderExtern", quota: 300, quota_delay: 30
         response= api.send_request(order.sendOrderExtern)
 
         if response.error
@@ -113,7 +112,6 @@ module TomtomWebfleetConnect
         order.tomtom_object = tomtom_object
         order.address= destination
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota: 300, quota_delay: 30
         response= api.send_request(order.sendDestinationOrderExtern(destination.to_hash))
 
         if response.error
@@ -126,7 +124,6 @@ module TomtomWebfleetConnect
 
       def self.find(api, search_params = {})
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
         response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(search_params))
 
         if response.error
@@ -153,7 +150,6 @@ module TomtomWebfleetConnect
         orders= []
         params = params.blank? ? {objectno: objectno} : params.merge({objectno: objectno})
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
         response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(params))
 
         if response.error
@@ -178,18 +174,15 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def cancel
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "cancelOrderExtern", quota: 300, quota_delay: 30
         @api.send_request(cancelOrderExtern)
       end
 
       def delete
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "deleteOrderExtern", quota: 300, quota_delay: 30
         @api.send_request(deleteOrderExtern(true))
       end
 
       def update(ordertext, orderautomations= nil)
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "updateOrderExtern", quota: 300, quota_delay: 30
         response= api.send_request(updateOrderExtern(orderautomations))
 
         if response.error
@@ -205,7 +198,6 @@ module TomtomWebfleetConnect
         old_addr = @address
         @address = address
 
-        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "updateDestinationOrderExtern", quota: 300, quota_delay: 30
         response= api.send_request(updateOrderExtern(updateDestinationOrderExtern(params)))
 
         if response.error
@@ -358,6 +350,10 @@ module TomtomWebfleetConnect
           defaults = defaults.merge(options)
         end
 
+        unless @address.blank?
+          defaults = defaults.merge(@address.to_hash)
+        end
+
         return defaults
       end
 
@@ -506,14 +502,7 @@ module TomtomWebfleetConnect
       # - General parameters
       #
       def showOrderWaypoints(options = {})
-        defaults={
-            action: 'showOrderWaypoints'
-        }
-        unless options.blank?
-          defaults = defaults.merge(options)
-        end
 
-        return defaults
       end
 
 
