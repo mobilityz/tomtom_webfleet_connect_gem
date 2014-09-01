@@ -25,19 +25,19 @@ module TomtomWebfleetConnect
       end
 
       def to_hash
-        object_hash= {}
+        object_hash = {}
 
         if not @objectno.blank? and @objectuid.blank?
-          object_hash.merge({objectno: @objectno})
-          object_hash.merge({objectname: @objectname}) unless @objectname.blank?
+          object_hash = object_hash.merge({objectno: @objectno})
+          object_hash = object_hash.merge({objectname: @objectname}) unless @objectname.blank?
         elsif @objectno.blank? and not @objectuid.blank?
-          object_hash.merge({objectuid: @objectuid})
+          object_hash = object_hash.merge({objectuid: @objectuid})
         elsif not @objectno.blank? and not @objectuid.blank?
-          object_hash.merge({objectno: @objectno})
-          object_hash.merge({objectuid: @objectuid})
+          object_hash = object_hash.merge({objectno: @objectno})
+          object_hash = object_hash.merge({objectuid: @objectuid})
         end
 
-        object_hash.merge({objectname: @objectname}) unless @objectname.blank?
+        object_hash = object_hash.merge({objectname: @objectname}) unless @objectname.blank?
 
         return object_hash
       end

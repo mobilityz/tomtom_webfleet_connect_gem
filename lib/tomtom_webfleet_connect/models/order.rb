@@ -1,6 +1,7 @@
-require 'tomtom_webfleet_connect/models/addresse'
+require 'tomtom_webfleet_connect/models/address'
 require 'tomtom_webfleet_connect/models/tomtom_object'
 require 'tomtom_webfleet_connect/models/driver'
+require 'tomtom_webfleet_connect/models/tomtom_date'
 
 module TomtomWebfleetConnect
   module Models
@@ -34,21 +35,21 @@ module TomtomWebfleetConnect
       #   ]
       # end
 
-      # module AUTOMATIONS
-      #   ALL = [
-      #       ['accept the order', ACCEPT_ORDER = '1'],
-      #       ['start the order', START_ORDER = '2'],
-      #       ['navigate to the order destination', NAVIGATE_TO_ORDER_DESTINATION = '3'],
-      #       ['skip displaying the route summary screen', SKIP_DISPLAY_ROUTE = '4'],
-      #       ['delete the order after it has been finished', DELETE_ORDER_AFTER_FINISHED = '5'],
-      #       ['suppress the continue with next order screen', SUPPRESS_CONTINUE_SCREEN = '6']
-      #   ]
-      # end
+      module AUTOMATIONS
+        ALL = [
+            ['accept the order', ACCEPT_ORDER = '1'],
+            ['start the order', START_ORDER = '2'],
+            ['navigate to the order destination', NAVIGATE_TO_ORDER_DESTINATION = '3'],
+            ['skip displaying the route summary screen', SKIP_DISPLAY_ROUTE = '4'],
+            ['delete the order after it has been finished', DELETE_ORDER_AFTER_FINISHED = '5'],
+            ['suppress the continue with next order screen', SUPPRESS_CONTINUE_SCREEN = '6']
+        ]
+      end
 
       # WEBFLEET.connect-en-1.21.1 page 15
       attr_accessor :orderid, :ordertext, :ordertype, :orderdate,
                     :planned_arrival_time, :estimated_arrival_time, :arrivaltolerance, :delay_warnings, :notify_enabled, :notify_leadtime, :waypointcount,
-                    :api, :tomtom_object, :adresse, :state, :contact, :driver
+                    :api, :tomtom_object, :address, :state, :contact, :driver
 
 
       public
@@ -73,7 +74,7 @@ module TomtomWebfleetConnect
           @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(api, params)
         end
 
-        @adresse = TomtomWebfleetConnect::Models::Addresse.new(api, params)
+        @address = TomtomWebfleetConnect::Models::Address.new(api, params)
         @state = OrderState.new(params)
         @contact = OrderContact.new(params)
         @driver = TomtomWebfleetConnect::Models::Driver.new(api, params)
@@ -104,26 +105,13 @@ module TomtomWebfleetConnect
         return order
       end
 
-
-      # # Create Order object without send on Webfleet.
-      # def self.new_with_all_tomtom_parameters(api, params = {})
-      #   order= nil
-      #
-      #   unless params.blank?
-      #     order= TomtomWebfleetConnect::Models::Order.new(api, params[:orderid], params[:ordertext], params[:objectno], params[:ordertype])
-      #     order.orderdate= params[:orderdate]
-      #
-      #   end
-      #
-      #   return order
-      # end
-      #
-      # # Create Order object with destination address and send on Webfleet.
-      # # The address has to be a hash of the shape: {latitude: '', longitude: '', country: '', zip: '', city: '', street: ''}
+      # Create Order object with destination address and send on Webfleet.
+      # The address has to be a hash of the shape: {latitude: '', longitude: '', country: '', zip: '', city: '', street: ''}
       def self.create_with_destination(api, tomtom_object, destination, params = {})
 
         order = TomtomWebfleetConnect::Models::Order.new(api, params)
         order.tomtom_object = tomtom_object
+        order.address= destination
 
         TomtomWebfleetConnect::Models::TomtomMethod.create! name: "sendDestinationOrderExtern", quota: 300, quota_delay: 30
         response= api.send_request(order.sendDestinationOrderExtern(destination.to_hash))
@@ -131,12 +119,11 @@ module TomtomWebfleetConnect
         if response.error
           order = nil
           raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          return order
         end
-
-        return order
       end
 
-      # TODO Find by uid/date/... method -> showOrderReportExtern
       def self.find(api, search_params = {})
 
         TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
@@ -161,27 +148,23 @@ module TomtomWebfleetConnect
 
       end
 
-      # TODO implement all function
-      def self.all_for_object(api, objectno)
+
+      def self.all_for_object(api, objectno, params = TomtomDate.new({range_pattern: TomtomDate::RANGE_PATTERN::CURRENT_MONTH}).to_hash)
         orders= []
+        params = params.blank? ? {objectno: objectno} : params.merge({objectno: objectno})
 
         TomtomWebfleetConnect::Models::TomtomMethod.create! name: "showOrderReportExtern", quota: 6, quota_delay: 1
-        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({objectno: objectno}))
+        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(params))
 
         if response.error
           raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
         else
           response.response_body.each do |line_order|
-            # puts line_order
+            orders << TomtomWebfleetConnect::Models::Order.new(line_order)
           end
         end
 
         return orders
-
-      end
-
-      # TODO implement where function with date
-      def self.where(api)
 
       end
 
@@ -204,10 +187,50 @@ module TomtomWebfleetConnect
         @api.send_request(deleteOrderExtern(true))
       end
 
-      # TODO implement send function
-      # Test si pas deja sent ou cancel ou reject (cf state) sinon envoie
-      def send
+      def update(ordertext, orderautomations= nil)
 
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "updateOrderExtern", quota: 300, quota_delay: 30
+        response= api.send_request(updateOrderExtern(orderautomations))
+
+        if response.error
+          raise UpdateOrderExternError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          @ordertext= ordertext[0...500]
+        end
+
+      end
+
+      def update_destination(address, params)
+
+        old_addr = @address
+        @address = address
+
+        TomtomWebfleetConnect::Models::TomtomMethod.create! name: "updateDestinationOrderExtern", quota: 300, quota_delay: 30
+        response= api.send_request(updateOrderExtern(updateDestinationOrderExtern(params)))
+
+        if response.error
+          @address = old_addr
+          raise UpdateDestinationOrderExternError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          update_params(params)
+        end
+
+
+      end
+
+      def update_params(params)
+        @orderid = params[:orderid][0...20] if params[:orderid].present?
+        @ordertext = params[:ordertext][0...500] if params[:ordertext].present?
+        @ordertype = params[:ordertype] if params[:ordertype].present?
+        @orderdate = params[:orderdate] if params[:orderdate].present?
+
+        @planned_arrival_time = params[:planned_arrival_time] if params[:planned_arrival_time].present?
+        @estimated_arrival_time = params[:estimated_arrival_time] if params[:estimated_arrival_time].present?
+        @arrivaltolerance = params[:arrivaltolerance] if params[:arrivaltolerance].present?
+        @delay_warnings = params[:delay_warnings] if params[:delay_warnings].present?
+        @notify_enabled = params[:notify_enabled] if params[:notify_enabled].present?
+        @notify_leadtime = params[:notify_leadtime] if params[:notify_leadtime].present?
+        @waypointcount = params[:waypointcount] if params[:waypointcount].present?
       end
 
 
@@ -217,7 +240,6 @@ module TomtomWebfleetConnect
       # WEBFLEET.connect-en-1.21.1 page 80
       # -------------------------------------
 
-      # TODO Implement sendOrderExtern function
       # The sendOrderExtern operation allows you to send an order message to an
       # object. The message is sent asynchronously and therefore a positive result of this
       # operation does not indicate that the message was sent to the object successfully.
@@ -228,16 +250,6 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      # def self.sendOrderExtern(objectno, orderid, ordertext, options = {})
-      #   defaults={
-      #       action: 'sendOrderExtern',
-      #       objectno: objectno[0...10],
-      #       orderid: orderid[0...20],
-      #       ordertext: ordertext[0...500]
-      #   }
-      #   options = defaults.merge(options)
-      # end
-
       def sendOrderExtern(options = {})
         defaults={
             action: 'sendOrderExtern',
@@ -245,10 +257,14 @@ module TomtomWebfleetConnect
             orderid: @orderid,
             ordertext: @ordertext
         }
-        options = defaults.merge(options)
+
+        unless options.blank?
+          defaults = defaults.merge(options)
+        end
+
+        return defaults
       end
 
-      # TODO Implement sendDestinationOrderExtern function
       # The sendDestinationOrderExtern operation allows you to send an order
       # message together with target coordinates for a navigation system connected to the
       # in-vehicle unit. The message is sent asynchronously and therefore a positive result
@@ -261,16 +277,6 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      # def self.sendDestinationOrderExtern(objectno, orderid, ordertext, options = {})
-      #   defaults={
-      #       action: 'sendDestinationOrderExtern',
-      #       objectno: objectno[0...10],
-      #       orderid: orderid[0...20],
-      #       ordertext: ordertext[0...500]
-      #   }
-      #   options = defaults.merge(options)
-      # end
-
       def sendDestinationOrderExtern(options = {})
         defaults={
             action: 'sendDestinationOrderExtern',
@@ -278,10 +284,13 @@ module TomtomWebfleetConnect
             orderid: @orderid,
             ordertext: @ordertext
         }
-        options = defaults.merge(options)
+        unless options.blank?
+          defaults = defaults.merge(options)
+        end
+
+        return defaults
       end
 
-      # TODO Implement updateOrderExtern function
       # Updates an order that was submitted with sendOrderExtern.
       #
       # Request limits 300 requests / 30 minutes
@@ -290,25 +299,20 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      # def self.updateOrderExtern(orderid, ordertext, options = {})
-      #   defaults={
-      #       action: 'updateOrderExtern',
-      #       orderid: orderid[0...20],
-      #       ordertext: ordertext[0...500]
-      #   }
-      #   options = defaults.merge(options)
-      # end
-
       def updateOrderExtern(options = {})
         defaults={
             action: 'updateOrderExtern',
             orderid: @orderid,
             ordertext: @ordertext
         }
-        options = defaults.merge(options)
+
+        unless options.blank?
+          defaults = defaults.merge(options)
+        end
+
+        return defaults
       end
 
-      # TODO Implement updateDestinationOrderExtern function
       # Updates an order that was submitted with sendDestinationOrderExtern or with insertDestinationOrderExtern.
       #
       # Request limits 300 requests / 30 minutes
@@ -317,22 +321,19 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      # def self.updateDestinationOrderExtern(orderid, options = {})
-      #   defaults={
-      #       action: 'updateDestinationOrderExtern',
-      #       orderid: orderid[0...20]
-      #   }
-      #   options = defaults.merge(options)
-      # end
-
       def updateDestinationOrderExtern(options = {})
         defaults={
             action: 'updateDestinationOrderExtern',
             orderid: @orderid,
             ordertext: @ordertext
         }
-        defaults_with_addr = defaults.merge(@destination_address)
-        options = defaults_with_addr.merge(options)
+        defaults_with_addr = defaults.merge(@address.to_hash)
+
+        unless options.blank?
+          defaults_with_addr = defaults_with_addr.merge(options)
+        end
+
+        return defaults_with_addr
       end
 
       # TODO Implement insertDestinationOrderExtern function
@@ -346,17 +347,20 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def insertDestinationOrderExtern(orderid, ordertext, ordertype = Order::TYPES::SERVICE, options = {})
+      def insertDestinationOrderExtern(options = {})
         defaults={
             action: 'insertDestinationOrderExtern',
-            orderid: orderid[0...20],
-            ordertext: ordertext[0...500],
-            ordertype: ordertype
+            orderid: @orderid,
+            ordertext: @ordertext,
+            ordertype: @ordertype
         }
-        options = defaults.merge(options)
+        unless options.blank?
+          defaults = defaults.merge(options)
+        end
+
+        return defaults
       end
 
-      # TODO Implement cancelOrderExtern function
       # Cancels orders that were submitted using one of sendDestinationOrderExtern,
       # insertDestinationOrderExtern or sendOrderExtern.
       #
@@ -366,13 +370,6 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      # def self.cancelOrderExtern(orderid)
-      #   defaults={
-      #       action: 'cancelOrderExtern',
-      #       orderid: orderid[0...20]
-      #   }
-      # end
-
       def cancelOrderExtern
         defaults={
             action: 'cancelOrderExtern',
@@ -380,7 +377,6 @@ module TomtomWebfleetConnect
         }
       end
 
-      # TODO Implement assignOrderExtern function
       # Assigns an existing order to an object and can be used to accomplish the following:
       # - send an order that was inserted before using insertDestinationOrderExtern
       # - resend an order that has been rejected or cancelled
@@ -391,20 +387,27 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def assignOrderExtern(orderid, options = {})
+      def assignOrderExtern(orderautomations = nil)
         defaults={
             action: 'assignOrderExtern',
-            orderid: orderid[0...20]
+            orderid: @orderid,
+            objectno: @tomtom_object.objectno
         }
-        options = defaults.merge(options)
+        unless orderautomations.blank?
+          defaults = defaults.merge(orderautomations)
+        end
+
+        return defaults
       end
 
-      # TODO Implement reassignOrderExtern function
       # Reassigns an order that was submitted using one of
       # sendDestinationOrderExtern, insertDestinationOrderExtern or
-      # sendOrderExtern to another object. This is done by cancelling the order on the
-      # old object that is currently assigned to this order and assigning the new object to
-      # the order. The order is then sent to the new object.
+      # sendOrderExtern to another object.
+      #
+      # This is done by cancelling the order on the old object
+      # that is currently assigned to this order and assigning
+      # the new object to the order.
+      # The order is then sent to the new object.
       #
       # Request limits 300 requests / 30 minutes
       #
@@ -412,16 +415,19 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      def reassignOrderExtern(objectid, orderid, options = {})
+      def reassignOrderExtern(orderautomations = nil)
         defaults={
             action: 'reassignOrderExtern',
-            objectid: objectid[0...10],
-            orderid: orderid[0...20],
+            objectid: @tomtom_object.objectno,
+            orderid: @orderid,
         }
-        options = defaults.merge(options)
+        unless orderautomations.blank?
+          defaults = defaults.merge(orderautomations)
+        end
+
+        return defaults
       end
 
-      # TODO Implement deleteOrderExtern function
       # Deletes an order from a device and optionally marks it as deleted in WEBFLEET.
       # Supported for the stand-alone TomTom navigation devices connected to
       # WEBFLEET and the TomTom navigation devices connected to LINK 5xx/4xx/3xx.
@@ -432,14 +438,6 @@ module TomtomWebfleetConnect
       # - Authentication parameters
       # - General parameters
       #
-      # def self.deleteOrderExtern(orderid, mark_deleted = false)
-      #   defaults={
-      #       action: 'deleteOrderExtern',
-      #       orderid: orderid[0...20],
-      #       mark_deleted: (mark_deleted ? '1' : '0' )
-      #   }
-      # end
-
       def deleteOrderExtern(deleted_within_webfleet = false)
         defaults={
             action: 'deleteOrderExtern',
@@ -448,7 +446,6 @@ module TomtomWebfleetConnect
         }
       end
 
-      # TODO Implement clearOrdersExtern function
       # Removes all orders from the device and optionally marks them as deleted in
       # WEBFLEET.
       #
@@ -466,15 +463,6 @@ module TomtomWebfleetConnect
         }
       end
 
-      # def clearOrdersExtern(deleted_within_webfleet = false)
-      #   defaults={
-      #       action: 'clearOrdersExtern',
-      #       objectno: @orderid,
-      #       mark_deleted: (deleted_within_webfleet ? '1' : '0' )
-      #   }
-      # end
-
-      # TODO Implement showOrderReportExtern function
       # Shows a list of orders that match the search parameters. Each entry shows the order
       # details and current status information.
       #
@@ -490,7 +478,11 @@ module TomtomWebfleetConnect
         defaults={
             action: 'showOrderReportExtern'
         }
-        options = defaults.merge(options)
+        unless options.blank?
+          defaults = defaults.merge(options)
+        end
+
+        return defaults
       end
 
       # def showOrderReportExtern(options = {})
@@ -517,7 +509,11 @@ module TomtomWebfleetConnect
         defaults={
             action: 'showOrderWaypoints'
         }
-        options = defaults.merge(options)
+        unless options.blank?
+          defaults = defaults.merge(options)
+        end
+
+        return defaults
       end
 
 
@@ -527,6 +523,10 @@ module TomtomWebfleetConnect
   class CreateOrderError < StandardError
   end
   class AllOrderForObjectError < StandardError
+  end
+  class UpdateOrderExternError < StandardError
+  end
+  class UpdateDestinationOrderExternError < StandardError
   end
 
   class OrderState

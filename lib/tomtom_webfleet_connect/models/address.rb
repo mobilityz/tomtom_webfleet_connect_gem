@@ -1,6 +1,6 @@
 module TomtomWebfleetConnect
   module Models
-    class Addresse
+    class Address
 
       attr_accessor :client,
                     :addrnr, :country, :city, :zip, :street, :longitude, :latitude, :destination
@@ -29,13 +29,13 @@ module TomtomWebfleetConnect
       def to_hash
         object_hash= Hash.new
 
-        object_hash.merge({addrnr: @addrnr}) unless @addrnr.blank?
-        object_hash.merge({country: @country}) unless @country.blank?
-        object_hash.merge({city: @city}) unless @city.blank?
-        object_hash.merge({zip: @zip}) unless @zip.blank?
-        object_hash.merge({street: @street}) unless @street.blank?
-        object_hash.merge({longitude: @longitude}) unless @longitude.blank?
-        object_hash.merge({latitude: @latitude}) unless @latitude.blank?
+        object_hash = object_hash.merge({addrnr: @addrnr}) unless @addrnr.blank?
+        object_hash = object_hash.merge({country: @country}) unless @country.blank?
+        object_hash = object_hash.merge({city: @city}) unless @city.blank?
+        object_hash = object_hash.merge({zip: @zip}) unless @zip.blank?
+        object_hash = object_hash.merge({street: @street}) unless @street.blank?
+        object_hash = object_hash.merge({longitude: @longitude}) unless @longitude.blank?
+        object_hash = object_hash.merge({latitude: @latitude}) unless @latitude.blank?
       end
 
       private
