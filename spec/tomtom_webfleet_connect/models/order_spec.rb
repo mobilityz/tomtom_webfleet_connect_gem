@@ -77,8 +77,8 @@ describe TomtomWebfleetConnect::Models::Order do
     end
 
     it "find_with_id" do
-      # order= TomtomWebfleetConnect::Models::Order.find_with_id(client, @order.orderid)
-      order= TomtomWebfleetConnect::Models::Order.find_with_id(client, 'test-K-61-END')
+      order= TomtomWebfleetConnect::Models::Order.find_with_id(client, @order.orderid)
+      # order= TomtomWebfleetConnect::Models::Order.find_with_id(client, 'test-K-61-END')
 
       expect(order).to_not be_nil
     end

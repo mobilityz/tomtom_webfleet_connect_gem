@@ -170,7 +170,7 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def save
-        response= api.send_request(sendOrderExtern)
+        response= @address.blank? ? api.send_request(sendOrderExtern) : api.send_request(sendDestinationOrderExtern)
 
         if response.error
           raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
