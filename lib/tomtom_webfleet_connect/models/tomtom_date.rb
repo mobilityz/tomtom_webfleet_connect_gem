@@ -35,9 +35,9 @@ module TomtomWebfleetConnect
 
         if params.blank?
           @range_pattern = RANGE_PATTERN::TODAY
-          @year= Time.now.year
-          @month= Time.now.month
-          @day= Time.now.day
+          @year= Date.today.year
+          @month= Date.today.month
+          @day= Date.today.day
         else
           @range_pattern = params[:range_pattern] if params[:range_pattern].present?
           @rangefrom_string = params[:rangefrom_string] if params[:rangefrom_string].present?
@@ -53,7 +53,7 @@ module TomtomWebfleetConnect
       # CLASS METHOD
       # ______________________________________________________
 
-      def self.now
+      def self.today
         TomtomDate.new
       end
 
@@ -61,12 +61,18 @@ module TomtomWebfleetConnect
         TomtomDate.new({range_pattern: RANGE_PATTERN::CURRENT_MONTH})
       end
 
+      def self.tomorrow
+        tomorrow = Date.today
+        tomorrow += 1
+        TomtomDate.new({year: tomorrow.year, month: tomorrow.month, day: tomorrow.day})
+      end
+
       # ______________________________________________________
       # INSTANCE METHOD
       # ______________________________________________________
 
       def to_s
-        ""
+        year + "-" + (month < 10 ? "0"+month : month) + "-" + (day < 10 ? "0"+day : day)
       end
 
       def to_hash

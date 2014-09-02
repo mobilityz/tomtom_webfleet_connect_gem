@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'tomtom_webfleet_connect/models/tomtom_object'
 require 'tomtom_webfleet_connect/models/address'
 require 'tomtom_webfleet_connect/models/tomtom_date'
+require 'tomtom_webfleet_connect/models/order_state'
 
 describe TomtomWebfleetConnect::Models::Order do
 
@@ -23,34 +24,6 @@ describe TomtomWebfleetConnect::Models::Order do
 
   describe "Class method" do
 
-    # xit "create" do
-    #
-    #   order, response = TomtomWebfleetConnect::Models::Order.create(client, ENV['GPS-TEST'], '001_order_test_gem', 'Order text test')
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    #
-    #   expect(order).not_to be_nil
-    # end
-
-    # it "create an existing one" do
-    #   response = TomtomWebfleetConnect::Models::Order.create(client, ENV['GPS-TEST'], orderid, 'Order text test')
-    #
-    #   response = TomtomWebfleetConnect::Models::Order.create(client, ENV['GPS-TEST'], orderid, 'Order text test')
-    #
-    #   puts response
-    # end
-
-    # it "all_for_object" do
-    #
-    #   response = TomtomWebfleetConnect::Models::Order.all_for_object(client, ENV['GPS-TEST'])
-    #
-    #   puts response
-    # end
 
   end
 
@@ -87,6 +60,30 @@ describe TomtomWebfleetConnect::Models::Order do
       orderid= TomtomWebfleetConnect::Models::Order.generate_orderid
 
       expect(orderid.size).to be <= 20
+    end
+
+    it "get all order at today and cancel all not finished or not canceled" do
+      addresse= TomtomWebfleetConnect::Models::Address.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
+
+      (0...3).each do |i|
+        TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test'})
+        # orders << TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test', orderdate: TomtomWebfleetConnect::Models::TomtomDate.tomorrow})
+      end
+
+      orders= TomtomWebfleetConnect::Models::Order.all(client,{range_pattern: TomtomWebfleetConnect::Models::TomtomDate.new.range_pattern})
+
+      orders.each do |order|
+        order.cancel unless (order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::FINISHED or order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::CANCELLED)
+      end
+
+      orders.each do |order|
+        order.refresh
+      end
+
+      orders.each do |order|
+        expect(order.state.orderstate).to eq(TomtomWebfleetConnect::Models::OrderState::STATES::CANCELLED)
+      end
+
     end
 
   end
