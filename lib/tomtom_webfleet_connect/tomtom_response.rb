@@ -22,54 +22,79 @@ module TomtomWebfleetConnect
 
     def format_response(response)
 
-      puts "---------"
-      puts response
-      puts "---------"
 
-      if response.body.empty?
+      # if response.body.empty?
+      #   #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
+      #   @http_status_code = 200
+      #   @http_status_message = "OK"
+      #   @response_body = {}
+      #   @response_code = nil
+      #   @response_message = ''
+      #   @error = false
+      #   @success = true
+      # else
+      #   @http_status_message = response.message
+      #   @http_status_code = response.code
+      #
+      #   if response.code == 200
+      #     lines = CSV.parse(response, :col_sep => ";")
+      #     if is_an_operation_response_code?(lines)
+      #       code, message = lines.first.first.split(/,/)
+      #       @response_body = {}
+      #       @response_code = code.to_i
+      #       @response_message = message
+      #       @error = true
+      #       @success = false
+      #     else
+      #       parameters = lines[0].collect! {|row| row.to_sym}
+      #       lines.shift
+      #       if lines.count > 1
+      #         @response_body = []
+      #         lines.each do |line|
+      #           @response_body << Hash[parameters.zip line]
+      #         end
+      #       else
+      #         @response_body = Hash[parameters.zip lines[0]]
+      #       end
+      #       @response_code = nil
+      #       @response_message = ''
+      #       @error = false
+      #       @success = true
+      #     end
+      #   else
+      #     @error = true
+      #     @success = false
+      #   end
+      # end
+
+
+      @response_body = JSON.parse(response.body, {symbolize_names: true})
+      if @response_body.instance_of? Array
+        @response_body = @response_body[0]
+      end
+
+      @http_status_code = response.code
+      @http_status_message = response.message
+
+      if @response_body.blank?
         #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
-        @http_status_code = 200
-        @http_status_message = "OK"
-        @response_body = {}
         @response_code = nil
         @response_message = ''
         @error = false
         @success = true
       else
-        @http_status_message = response.message
-        @http_status_code = response.code
-
         if response.code == 200
-          lines = CSV.parse(response, :col_sep => ";")
-          if is_an_operation_response_code?(lines)
-            code, message = lines.first.first.split(/,/)
-            @response_body = {}
-            @response_code = code.to_i
-            @response_message = message
-            @error = true
-            @success = false
-          else
-            parameters = lines[0].collect! { |row| row.to_sym }
-            lines.shift
-            if lines.count > 1
-              @response_body = []
-              lines.each do |line|
-                @response_body << Hash[parameters.zip line]
-              end
-            else
-              @response_body = Hash[parameters.zip lines[0]]
-            end
-            @response_code = nil
-            @response_message = ''
-            @error = false
-            @success = true
-          end
+          @response_code = nil
+          @response_message = ''
+          @error = false
+          @success = true
         else
           @error = true
           @success = false
         end
       end
-      return self
+
+      self
     end
 
     private

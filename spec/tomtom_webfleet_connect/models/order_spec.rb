@@ -57,12 +57,12 @@ describe TomtomWebfleetConnect::Models::Order do
   describe "Order class methods" do
 
     before do
-      # @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
-      # @order = TomtomWebfleetConnect::Models::Order.create(client, @tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order class methods text test'})
+      @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      @order = TomtomWebfleetConnect::Models::Order.create(client, @tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order class methods text test'})
     end
 
     after do
-      # client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'], true))
+      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'], true))
     end
 
     it "all_for_object" do
@@ -209,7 +209,7 @@ describe TomtomWebfleetConnect::Models::Order do
       order.delete
     end
 
-    xit "reassignOrderExtern" do
+    it "reassignOrderExtern" do
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'reassignOrderExtern test'})
       order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
 
