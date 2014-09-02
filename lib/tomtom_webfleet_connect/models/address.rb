@@ -25,6 +25,16 @@ module TomtomWebfleetConnect
         ""
       end
 
+      def update(params)
+        @addrnr =  params[:addrnr].present? ? params[:addrnr] : nil
+        @country = params[:country].present? ? params[:country] : nil
+        @city = params[:city].present? ? params[:city] : nil
+        @zip = params[:zip].present? ? params[:zip] : nil
+        @street = params[:street].present? ? params[:street] : nil
+        @longitude = params[:longitude].present? ? params[:longitude] : nil
+        @latitude = params[:latitude].present? ? params[:latitude] : nil
+      end
+
       # TODO hash not create successful
       def to_hash
         object_hash= Hash.new

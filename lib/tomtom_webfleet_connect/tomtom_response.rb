@@ -1,7 +1,5 @@
 module TomtomWebfleetConnect
 
-  require 'csv'
-
   ##
   # This class represents the formated tomtom response
   class TomtomResponse
@@ -69,9 +67,7 @@ module TomtomWebfleetConnect
 
 
       @response_body = JSON.parse(response.body, {symbolize_names: true})
-      if @response_body.instance_of? Array
-        @response_body = @response_body[0]
-      end
+      @response_body = @response_body[0] if @response_body.instance_of? Array
 
       @http_status_code = response.code
       @http_status_message = response.message
@@ -84,13 +80,21 @@ module TomtomWebfleetConnect
         @success = true
       else
         if response.code == 200
-          @response_code = nil
-          @response_message = ''
-          @error = false
-          @success = true
+          if @response_body.has_key?(:errorCode)
+            @response_code = @response_body[:errorCode]
+            @response_message = @response_body[:errorMsg]
+            @error = true
+            @success = false
+          else
+            @response_code = nil
+            @response_message = ''
+            @error = false
+            @success = true
+          end
         else
           @error = true
           @success = false
+          raise StandardError, "Error: The HTTP request failed"
         end
       end
 
@@ -101,5 +105,6 @@ module TomtomWebfleetConnect
     def is_an_operation_response_code?(response)
       return response.first.size == 1 ? true : false
     end
+
   end
 end

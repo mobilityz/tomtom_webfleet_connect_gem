@@ -25,16 +25,6 @@ module TomtomWebfleetConnect
       #   ]
       # end
 
-      # module STATES
-      #   ALL = [
-      #       ['null', NONE = 'null'],
-      #       ['Arrived at destination', ARRIVED_AT_DESTINATION = '202'],
-      #       ['Work started', WORK_STARTED = '203'],
-      #       ['Work finished', WORK_FINISHED = '204'],
-      #       ['Departed from destination', DEPARTED_FROM_DESTINATION = '205']
-      #   ]
-      # end
-
       module AUTOMATIONS
         ALL = [
             ['accept the order', ACCEPT_ORDER = '1'],
@@ -70,10 +60,7 @@ module TomtomWebfleetConnect
         @notify_leadtime = params[:notify_leadtime] if params[:notify_leadtime].present?
         @waypointcount = params[:waypointcount] if params[:waypointcount].present?
 
-        if params[:objectno].present? or params[:objectuid].present?
-          @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(api, params)
-        end
-
+        @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(api, params)
         @address = TomtomWebfleetConnect::Models::Address.new(api, params)
         @state = OrderState.new(params)
         @contact = OrderContact.new(params)
@@ -87,6 +74,15 @@ module TomtomWebfleetConnect
       # ______________________________________________________
       # CLASS METHOD
       # ______________________________________________________
+
+      # Create Order object and send on Webfleet.
+      def self.new_without_saved(api, tomtom_object, params = {})
+
+        order = TomtomWebfleetConnect::Models::Order.new(api, params)
+        order.tomtom_object = tomtom_object
+
+        return order
+      end
 
       # Create Order object and send on Webfleet.
       def self.create(api, tomtom_object, params = {})
@@ -128,7 +124,7 @@ module TomtomWebfleetConnect
 
         if response.error
           order = nil
-          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+          raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
           order = TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
         end
@@ -173,17 +169,41 @@ module TomtomWebfleetConnect
       # INSTANCE METHOD
       # ______________________________________________________
 
+      def save
+        response= api.send_request(sendOrderExtern)
+
+        if response.error
+          raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+      end
+
       def cancel
-        @api.send_request(cancelOrderExtern)
+        response = @api.send_request(cancelOrderExtern)
+
+        if response.error
+
+        else
+
+        end
+
+        self
       end
 
       def delete
-        @api.send_request(deleteOrderExtern(true))
+        response = @api.send_request(deleteOrderExtern(true))
+
+        if response.error
+
+        else
+
+        end
+
+        self
       end
 
       def update(ordertext, orderautomations= nil)
-
-        response= api.send_request(updateOrderExtern(orderautomations))
+        response = api.send_request(updateOrderExtern(orderautomations))
 
         if response.error
           raise UpdateOrderExternError, "Error #{response.response_code}: #{response.response_message}"
@@ -191,6 +211,7 @@ module TomtomWebfleetConnect
           @ordertext= ordertext[0...500]
         end
 
+        self
       end
 
       def update_destination(address, params)
@@ -207,22 +228,41 @@ module TomtomWebfleetConnect
           update_params(params)
         end
 
-
+        self
       end
 
       def update_params(params)
-        @orderid = params[:orderid][0...20] if params[:orderid].present?
-        @ordertext = params[:ordertext][0...500] if params[:ordertext].present?
-        @ordertype = params[:ordertype] if params[:ordertype].present?
-        @orderdate = params[:orderdate] if params[:orderdate].present?
+        @orderid = params[:orderid].present? ? params[:orderid][0...20] : nil
+        @ordertext = params[:ordertext].present? ? params[:ordertext][0...500] : nil
+        @ordertype = params[:ordertype].present? ? params[:ordertype] : nil
+        @orderdate = params[:orderdate].present? ? params[:orderdate] : nil
 
-        @planned_arrival_time = params[:planned_arrival_time] if params[:planned_arrival_time].present?
-        @estimated_arrival_time = params[:estimated_arrival_time] if params[:estimated_arrival_time].present?
-        @arrivaltolerance = params[:arrivaltolerance] if params[:arrivaltolerance].present?
-        @delay_warnings = params[:delay_warnings] if params[:delay_warnings].present?
-        @notify_enabled = params[:notify_enabled] if params[:notify_enabled].present?
-        @notify_leadtime = params[:notify_leadtime] if params[:notify_leadtime].present?
-        @waypointcount = params[:waypointcount] if params[:waypointcount].present?
+        @planned_arrival_time = params[:planned_arrival_time].present? ? params[:planned_arrival_time] : nil
+        @estimated_arrival_time = params[:estimated_arrival_time].present? ? params[:estimated_arrival_time] : nil
+        @arrivaltolerance = params[:arrivaltolerance].present? ? params[:arrivaltolerance] : nil
+        @delay_warnings = params[:delay_warnings].present? ? params[:delay_warnings] : nil
+        @notify_enabled = params[:notify_enabled].present? ? params[:notify_enabled] : nil
+        @notify_leadtime = params[:notify_leadtime].present? ? params[:notify_leadtime] : nil
+        @waypointcount = params[:waypointcount].present? ? params[:waypointcount] : nil
+
+        @tomtom_object.update(params)
+        @address.update(params)
+        @state.update(params)
+        @contact.update(params)
+        @driver.update(params)
+      end
+
+      # Get Order on Webfleet and reset Order object
+      def refresh
+        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
+
+        if response.error
+          raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          update_params(response.response_body)
+        end
+
+        self
       end
 
 
@@ -511,6 +551,8 @@ module TomtomWebfleetConnect
 
   class CreateOrderError < StandardError
   end
+  class FindOrderError < StandardError
+  end
   class AllOrderForObjectError < StandardError
   end
   class UpdateOrderExternError < StandardError
@@ -521,6 +563,62 @@ module TomtomWebfleetConnect
   class OrderState
 
     attr_accessor :orderstate, :orderstate_time, :orderstate_longitude, :orderstate_latitude, :orderstate_postext, :orderstate_msgtext
+
+    # 0 - Not yet sent
+    # 100 - Sent
+    # 101 - Received
+    # 102 - Read
+    # 103 - Accepted
+    # 201 - Service order started
+    # 202 - Arrived at destination
+    # 203 - Work started
+    # 204 - Work finished
+    # 205 - Departed from destination
+    # 221 - Pickup order started
+    # 222 - Arrived at pick up location
+    # 223 - Pick up started
+    # 224 - Pick up finished
+    # 225 - Departed from pick up location
+    # 241 - Delivery order started
+    # 242 - Arrived at delivery location
+    # 243 - Delivery started
+    # 244 - Delivery finished
+    # 245 - Departed from delivery location
+    # 298 - Resumed
+    # 299 - Suspended
+    # 301 - Cancelled
+    # 302 - Rejected
+    # 401 - Finished
+    module STATES
+      ALL = [
+          ['null', NONE = 'null'],
+          ['Not yet sent', NOT_YET_SENT = 0],
+          ['Sent', SENT = 100],
+          ['Received', RECEIVED = 101],
+          ['Read', READ = 102],
+          ['Accepted', ACCEPTED = 103],
+          ['Service order started', SERVICE_ORDER_STARTED = 201],
+          ['Arrived at destination', ARRIVED_AT_DESTINATION = 202],
+          ['Work started', WORK_STARTED = 203],
+          ['Work finished', WORK_FINISHED = 204],
+          ['Departed from destination', DEPARTED_FROM_DESTINATION = 205],
+          ['Pickup order started', PICKUP_ORDER_STARTED = 221],
+          ['Arrived at pick up location', ARRIVED_AT_PICKUP_LOCATION = 222],
+          ['Pick up started', PICKUP_STARTED = 223],
+          ['Pick up finished', PICKUP_FINISHED = 224],
+          ['Departed from pick up location', DEPARTED_FROM_PICKUP_LOCATION = 225],
+          ['Delivery order started', DELIVERY_ORDER_STARTED = 241],
+          ['Arrived at delivery location', ARRIVED_AT_DELIVERY_LOCATION = 242],
+          ['Delivery started', DELIVERY_STARTED = 243],
+          ['Delivery finished', DELIVERY_FINISHED = 244],
+          ['Departed from delivery location', DEPARTED_FROM_DELIVERY_LOCATION = 245],
+          ['Resumed', RESUMED = 298],
+          ['Suspended', SUSPENDED = 299],
+          ['Cancelled', CANCELLED = 301],
+          ['Rejected', REJECTED = 302],
+          ['Finished', FINISHED = 401],
+      ]
+    end
 
     public
 
@@ -539,6 +637,20 @@ module TomtomWebfleetConnect
       ""
     end
 
+    def update(params)
+      @orderstate = params[:orderstate].present? ? params[:orderstate] : nil
+      @orderstate_time = params[:orderstate_time].present? ? params[:orderstate_time] : nil
+      @orderstate_longitude = params[:orderstate_longitude].present? ? params[:orderstate_longitude] : nil
+      @orderstate_latitude = params[:orderstate_latitude].present? ? params[:orderstate_latitude] : nil
+      @orderstate_postext = params[:orderstate_postext].present? ? params[:orderstate_postext] : nil
+      @orderstate_msgtext = params[:orderstate_msgtext].present? ? params[:orderstate_msgtext] : nil
+    end
+
+    def get_status_string
+      state= STATES::ALL.select { |a| a[1] == @orderstate }
+      state[0][0]
+    end
+
   end
 
   class OrderContact
@@ -550,6 +662,11 @@ module TomtomWebfleetConnect
     def initialize(params = {})
       @contact = params[:contact] if params[:contact].present?
       @contacttel = params[:contacttel] if params[:contacttel].present?
+    end
+
+    def update(params)
+      @contact = params[:contact].present? ? params[:contact] : nil
+      @contacttel = params[:contacttel].present? ? params[:contacttel] : nil
     end
 
     def to_s

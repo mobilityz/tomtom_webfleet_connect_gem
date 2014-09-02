@@ -14,6 +14,12 @@ module TomtomWebfleetConnect
         @objectuid = params[:objectuid] if params[:objectuid].present?
       end
 
+      def update(params)
+        @objectno =  params[:objectno].present? ? params[:objectno] : nil
+        @objectname = params[:objectname].present? ? params[:objectname] : nil
+        @objectuid = params[:objectuid].present? ? params[:objectuid] : nil
+      end
+
       def to_s
         string= ""
 

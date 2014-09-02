@@ -16,6 +16,13 @@ module TomtomWebfleetConnect
         @driveruid = params[:driveruid] if params[:driveruid].present?
       end
 
+      def update(params)
+        @driverno =  params[:driverno].present? ? params[:driverno] : nil
+        @drivername = params[:drivername].present? ? params[:drivername] : nil
+        @drivertelmobile = params[:drivertelmobile].present? ? params[:drivertelmobile] : nil
+        @driveruid = params[:driveruid].present? ? params[:driveruid] : nil
+      end
+
       def to_s
         ""
       end

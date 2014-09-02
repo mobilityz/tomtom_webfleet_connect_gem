@@ -139,6 +139,17 @@ describe TomtomWebfleetConnect::API do
       expect(response.response_body).to be_an(Hash)
     end
 
+    it "with bad action return error" do
+      TomtomWebfleetConnect::Models::TomtomMethod.create! name: "insertDriverExtern", quota:10, quota_delay: 1
+      response = client.send_request({action: 'insertDriverExtern', drivernum: 'Blublu'})
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq('driver number / uid is missing or invalid')
+      expect(response.response_code).to eq(9021)
+      expect(response.error).to eq(true)
+      expect(response.success).to eq(false)
+    end
 
 
     describe "quota manager" do
