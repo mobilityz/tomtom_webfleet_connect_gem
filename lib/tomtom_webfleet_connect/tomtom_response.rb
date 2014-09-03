@@ -27,6 +27,7 @@ module TomtomWebfleetConnect
       not @response_code.empty?
     end
 
+    # TODO revoir le format JSon ne fonctionne pas correctement lors des requete
     def format_response(response)
 
       if @format == FORMATS::CSV

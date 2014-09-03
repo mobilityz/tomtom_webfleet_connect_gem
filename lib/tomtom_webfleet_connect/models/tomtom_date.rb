@@ -54,13 +54,13 @@ module TomtomWebfleetConnect
           @rangefrom_string = params[:rangefrom_string] if params[:rangefrom_string].present?
           @rangeto_string = params[:rangeto_string] if params[:rangeto_string].present?
 
-          @year = params[:year].to_i if params[:year].present?
-          @month = params[:month].to_i if params[:month].present?
-          @day = params[:day].to_i if params[:day].present?
+          @year = params[:year].present? ? params[:year].to_i : DateTime.now.year
+          @month = params[:month].present? ? params[:month].to_i : DateTime.now.month
+          @day = params[:day].present? ? params[:day].to_i : DateTime.now.day
 
-          @hour = params[:hour].to_i if params[:hour].present?
-          @minute = params[:minute].to_i if params[:minute].present?
-          @second = params[:second].to_i if params[:second].present?
+          @hour = params[:hour].present? ? params[:hour].to_i : 0
+          @minute = params[:minute].present? ? params[:minute].to_i : 0
+          @second = params[:second].present? ? params[:second].to_i : 0
 
           @datetime = DateTime.new(@year,@month,@day,@hour,@minute,@second,'+1')
         end
@@ -137,6 +137,10 @@ module TomtomWebfleetConnect
         object_hash = object_hash.merge({rangeto_string: get_end_journey_datetime})
 
         return object_hash
+      end
+
+      def get_range_pattern
+        {range_pattern: @range_pattern}
       end
 
       def get_hash_date

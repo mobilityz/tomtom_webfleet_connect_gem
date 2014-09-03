@@ -155,7 +155,7 @@ module TomtomWebfleetConnect
       end
 
 
-      def self.all_for_object(api, objectno, params = TomtomDate.new({range_pattern: TomtomDate::RANGE_PATTERN::CURRENT_MONTH}).to_hash)
+      def self.all_for_object(api, objectno, params = TomtomDate.new({range_pattern: TomtomDate::RANGE_PATTERN::CURRENT_MONTH}).get_range_pattern)
         orders= []
         params = params.blank? ? {objectno: objectno} : params.merge({objectno: objectno})
 
