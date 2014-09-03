@@ -71,7 +71,7 @@ module TomtomWebfleetConnect
       # CLASS METHOD
       # ______________________________________________________
 
-      def self.today
+      def self.now
         TomtomDate.new
       end
 
