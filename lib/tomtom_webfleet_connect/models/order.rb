@@ -38,7 +38,7 @@ module TomtomWebfleetConnect
       end
 
       # WEBFLEET.connect-en-1.21.1 page 15
-      attr_accessor :orderid, :ordertext, :ordertype, :orderdate,
+      attr_accessor :orderid, :ordertext, :ordertype, :orderdate, :ordertime,
                     :planned_arrival_time, :estimated_arrival_time, :arrivaltolerance, :delay_warnings, :notify_enabled, :notify_leadtime, :waypointcount,
                     :api, :tomtom_object, :address, :state, :contact, :driver
 
@@ -52,6 +52,7 @@ module TomtomWebfleetConnect
         @ordertext = params[:ordertext][0...500] if params[:ordertext].present?
         @ordertype = params[:ordertype] if params[:ordertype].present?
         @orderdate = params[:orderdate] if params[:orderdate].present?
+        @ordertime = params[:ordertime] if params[:ordertime].present?
 
         @planned_arrival_time = params[:planned_arrival_time] if params[:planned_arrival_time].present?
         @estimated_arrival_time = params[:estimated_arrival_time] if params[:estimated_arrival_time].present?
@@ -109,7 +110,7 @@ module TomtomWebfleetConnect
         order.tomtom_object = tomtom_object
         order.address= destination
 
-        response= api.send_request(order.sendDestinationOrderExtern(destination.to_hash))
+        response= api.send_request(order.sendDestinationOrderExtern(destination.to_hash.merge(params)))
 
         if response.error
           order = nil

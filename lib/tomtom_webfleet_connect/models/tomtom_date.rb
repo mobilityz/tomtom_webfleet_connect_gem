@@ -2,7 +2,8 @@ module TomtomWebfleetConnect
   module Models
     class TomtomDate
 
-      attr_accessor :range_pattern, :rangefrom_string, :rangeto_string, :year, :month, :day
+      attr_accessor :range_pattern, :rangefrom_string, :rangeto_string, :year, :month, :day,
+                    :datetime, :hour, :minute, :second
 
       public
 
@@ -35,16 +36,33 @@ module TomtomWebfleetConnect
 
         if params.blank?
           @range_pattern = RANGE_PATTERN::TODAY
-          @year= Date.today.year
-          @month= Date.today.month
-          @day= Date.today.day
+          @year= DateTime.now.year
+          @month= DateTime.now.month
+          @day= DateTime.now.day
+          @datetime = DateTime.new(Date.today.year,Date.today.month,Date.today.day,DateTime.now.hour,DateTime.now.minute,DateTime.now.second,'+1')
+        # elsif not params[:range_pattern].present?
+        #   @year = params[:year].to_i if params[:year].present?
+        #   @month = params[:month].to_i if params[:month].present?
+        #   @day = params[:day].to_i if params[:day].present?
+        #
+        #   @range_pattern = RANGE_PATTERN::USER_DEFINED_RANGE
+        #   @rangefrom_string = "#{params[:year]}-#{params[:month]}-#{params[:day]}T00 : 00 : 00"
+        #   @rangeto_string = "#{params[:year]}-#{params[:month]}-#{params[:day]}T23 : 59 : 59"
+
         else
           @range_pattern = params[:range_pattern] if params[:range_pattern].present?
           @rangefrom_string = params[:rangefrom_string] if params[:rangefrom_string].present?
           @rangeto_string = params[:rangeto_string] if params[:rangeto_string].present?
-          @year = params[:year] if params[:year].present?
-          @month = params[:mouth] if params[:mouth].present?
-          @day = params[:day] if params[:day].present?
+
+          @year = params[:year].to_i if params[:year].present?
+          @month = params[:month].to_i if params[:month].present?
+          @day = params[:day].to_i if params[:day].present?
+
+          @hour = params[:hour].to_i if params[:hour].present?
+          @minute = params[:minute].to_i if params[:minute].present?
+          @second = params[:second].to_i if params[:second].present?
+
+          @datetime = DateTime.new(@year,@month,@day,@hour,@minute,@second,'+1')
         end
 
       end
@@ -62,17 +80,40 @@ module TomtomWebfleetConnect
       end
 
       def self.tomorrow
-        tomorrow = Date.today
+        tomorrow = DateTime.now
+        tomorrow = tomorrow.new_offset('+01:00')
         tomorrow += 1
-        TomtomDate.new({year: tomorrow.year, month: tomorrow.month, day: tomorrow.day})
+        TomtomDate.new({year: tomorrow.year, month: tomorrow.month, day: tomorrow.day, hour: tomorrow.hour, minute: tomorrow.minute, second: tomorrow.second})
       end
 
       # ______________________________________________________
       # INSTANCE METHOD
       # ______________________________________________________
 
-      def to_s
-        year + "-" + (month < 10 ? "0"+month : month) + "-" + (day < 10 ? "0"+day : day)
+      def date_for_create
+        @datetime.strftime("%FT%:z")
+      end
+
+      def time_for_create
+        @datetime.strftime("%T")
+      end
+
+      def date_for_show
+        @datetime.strftime("%FT%:z")
+      end
+
+      def time_for_show
+        @datetime.strftime("%T")
+      end
+
+      def get_start_journey_datetime
+        datetime = DateTime.new(@datetime.year,@datetime.month,@datetime.day,0,0,0,'+01:00')
+        datetime.strftime("%FT%T")
+      end
+
+      def get_end_journey_datetime
+        datetime = DateTime.new(@datetime.year,@datetime.month,@datetime.day,23,59,59,'+01:00')
+        datetime.strftime("%FT%T")
       end
 
       def to_hash
@@ -82,12 +123,31 @@ module TomtomWebfleetConnect
         object_hash = object_hash.merge({rangefrom_string: @rangefrom_string}) unless @rangefrom_string.blank?
         object_hash = object_hash.merge({rangeto_string: @rangeto_string}) unless @rangeto_string.blank?
         object_hash = object_hash.merge({year: @year}) unless @year.blank?
-        object_hash = object_hash.merge({mouth: @mouth}) unless @mouth.blank?
+        object_hash = object_hash.merge({month: @month}) unless @month.blank?
         object_hash = object_hash.merge({day: @day}) unless @day.blank?
 
         return object_hash
       end
 
+      def get_range_pattern_full_day
+        object_hash= Hash.new
+
+        object_hash = object_hash.merge({range_pattern: @range_pattern})
+        object_hash = object_hash.merge({rangefrom_string: get_start_journey_datetime})
+        object_hash = object_hash.merge({rangeto_string: get_end_journey_datetime})
+
+        return object_hash
+      end
+
+      def get_hash_date
+        object_hash= Hash.new
+
+        object_hash = object_hash.merge({year: @year}) unless @year.blank?
+        object_hash = object_hash.merge({month: @month}) unless @month.blank?
+        object_hash = object_hash.merge({day: @day}) unless @day.blank?
+
+        return object_hash
+      end
 
     end
   end

@@ -31,7 +31,7 @@ describe TomtomWebfleetConnect::Models::Order do
 
     before do
       @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
-      @order = TomtomWebfleetConnect::Models::Order.create(client, @tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order class methods text test'})
+      # @order = TomtomWebfleetConnect::Models::Order.create(client, @tomtom_object, {orderid: '001_order_test_gem', ordertext: 'Order class methods text test'})
     end
 
     after do
@@ -67,10 +67,33 @@ describe TomtomWebfleetConnect::Models::Order do
 
       (0...3).each do |i|
         TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test'})
-        # orders << TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test', orderdate: TomtomWebfleetConnect::Models::TomtomDate.tomorrow})
       end
 
       orders= TomtomWebfleetConnect::Models::Order.all(client,{range_pattern: TomtomWebfleetConnect::Models::TomtomDate.new.range_pattern})
+
+      orders.each do |order|
+        order.cancel unless (order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::FINISHED or order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::CANCELLED)
+      end
+
+      orders.each do |order|
+        order.refresh
+      end
+
+      orders.each do |order|
+        expect(order.state.orderstate).to eq(TomtomWebfleetConnect::Models::OrderState::STATES::CANCELLED)
+      end
+
+    end
+
+    it "get all order at tomorrow and cancel all not finished or not canceled" do
+      addresse = TomtomWebfleetConnect::Models::Address.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
+      tomorrow = TomtomWebfleetConnect::Models::TomtomDate.tomorrow
+
+      (0...3).each do |i|
+        TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Tomorrow order', orderdate: tomorrow.date_for_create, ordertime: tomorrow.time_for_create})
+      end
+
+      orders= TomtomWebfleetConnect::Models::Order.all(client, tomorrow.get_range_pattern_full_day)
 
       orders.each do |order|
         order.cancel unless (order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::FINISHED or order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::CANCELLED)
