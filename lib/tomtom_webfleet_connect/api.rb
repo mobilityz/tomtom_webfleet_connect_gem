@@ -1,8 +1,11 @@
 module TomtomWebfleetConnect
   class API
-    attr_accessor :key, :account, :lang, :use_ISO8601, :use_UTF8
+    attr_accessor :key, :account, :lang, :use_ISO8601, :use_UTF8, :response_format
     
-    def initialize(key = nil, account = nil, default_parameters = {})
+    def initialize(key = nil, account = nil, default_parameters = {}, response_format = TomtomWebfleetConnect::TomtomResponse::FORMATS::CSV)
+
+      @response_format = response_format
+
       @key = key || self.key
       @key = @key.strip if @key
       
@@ -22,7 +25,7 @@ module TomtomWebfleetConnect
       user = TomtomWebfleetConnect::Models::User.avalaible_user(method).first
 
       if user.nil?
-        response = TomtomWebfleetConnect::TomtomResponse.new
+        response = TomtomWebfleetConnect::TomtomResponse.new(@response_format)
         response.http_status_code = 200
         response.http_status_message = 'OK'
         response.response_body = {}
@@ -32,7 +35,7 @@ module TomtomWebfleetConnect
         response.success = false
       else
         url = get_method_url(method, user)
-        request = TomtomWebfleetConnect::TomtomRequest.new
+        request = TomtomWebfleetConnect::TomtomRequest.new(@response_format)
         response =  request.send_request(url, options)
       end
 
@@ -70,7 +73,7 @@ module TomtomWebfleetConnect
     end
     
     def get_url_with_parameters
-      get_root_url + "?" + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=json"
+      get_root_url + "?" + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=" + @response_format
     end
 
     def get_base_url(user)

@@ -146,7 +146,7 @@ module TomtomWebfleetConnect
           raise AllOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
           response.response_body.each do |line_order|
-            orders << TomtomWebfleetConnect::Models::Order.new(line_order)
+            orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
           end
         end
 
@@ -164,7 +164,7 @@ module TomtomWebfleetConnect
           raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
         else
           response.response_body.each do |line_order|
-            orders << TomtomWebfleetConnect::Models::Order.new(line_order)
+            orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
           end
         end
 

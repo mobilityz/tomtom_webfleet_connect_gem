@@ -9,8 +9,8 @@ module TomtomWebfleetConnect
 
     attr_reader :request_url, :response 
     
-    def initialize
-      @response = TomtomWebfleetConnect::TomtomResponse.new
+    def initialize(format = TomtomWebfleetConnect::TomtomResponse::FORMATS::CSV)
+      @response = TomtomWebfleetConnect::TomtomResponse.new(format)
       @request_url = String.new
     end
 

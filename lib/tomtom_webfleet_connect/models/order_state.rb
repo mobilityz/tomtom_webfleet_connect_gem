@@ -78,7 +78,7 @@ module TomtomWebfleetConnect
       end
 
       def update(params)
-        @orderstate = params[:orderstate].present? ? params[:orderstate] : nil
+        @orderstate = params[:orderstate].present? ? params[:orderstate].to_i : nil
         @orderstate_time = params[:orderstate_time].present? ? params[:orderstate_time] : nil
         @orderstate_longitude = params[:orderstate_longitude].present? ? params[:orderstate_longitude] : nil
         @orderstate_latitude = params[:orderstate_latitude].present? ? params[:orderstate_latitude] : nil

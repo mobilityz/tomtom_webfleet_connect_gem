@@ -1,13 +1,22 @@
 module TomtomWebfleetConnect
 
+  require 'csv'
+
   ##
   # This class represents the formated tomtom response
   class TomtomResponse
 
-    attr_accessor :http_status_code, :http_status_message, :response_code, :response_message, :response_body, :error, :success
+    attr_accessor :http_status_code, :http_status_message, :response_code, :response_message, :response_body, :error, :success, :format
 
-    def initialize
+    module FORMATS
+      ALL = [
+          ['csv', CSV = 'csv'],
+          ['json', JSON = 'json']
+      ]
+    end
 
+    def initialize(format = FORMATS::CSV)
+      @format = format
     end
 
     def to_s
@@ -20,81 +29,82 @@ module TomtomWebfleetConnect
 
     def format_response(response)
 
+      if @format == FORMATS::CSV
+        if response.body.empty?
+          #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
+          @http_status_code = 200
+          @http_status_message = "OK"
+          @response_body = {}
+          @response_code = nil
+          @response_message = ''
+          @error = false
+          @success = true
+        else
+          @http_status_message = response.message
+          @http_status_code = response.code
 
-      # if response.body.empty?
-      #   #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
-      #   @http_status_code = 200
-      #   @http_status_message = "OK"
-      #   @response_body = {}
-      #   @response_code = nil
-      #   @response_message = ''
-      #   @error = false
-      #   @success = true
-      # else
-      #   @http_status_message = response.message
-      #   @http_status_code = response.code
-      #
-      #   if response.code == 200
-      #     lines = CSV.parse(response, :col_sep => ";")
-      #     if is_an_operation_response_code?(lines)
-      #       code, message = lines.first.first.split(/,/)
-      #       @response_body = {}
-      #       @response_code = code.to_i
-      #       @response_message = message
-      #       @error = true
-      #       @success = false
-      #     else
-      #       parameters = lines[0].collect! {|row| row.to_sym}
-      #       lines.shift
-      #       if lines.count > 1
-      #         @response_body = []
-      #         lines.each do |line|
-      #           @response_body << Hash[parameters.zip line]
-      #         end
-      #       else
-      #         @response_body = Hash[parameters.zip lines[0]]
-      #       end
-      #       @response_code = nil
-      #       @response_message = ''
-      #       @error = false
-      #       @success = true
-      #     end
-      #   else
-      #     @error = true
-      #     @success = false
-      #   end
-      # end
-
-
-      @response_body = JSON.parse(response.body, {symbolize_names: true})
-      @response_body = @response_body[0] if @response_body.instance_of? Array
-
-      @http_status_code = response.code
-      @http_status_message = response.message
-
-      if @response_body.blank?
-        #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
-        @response_code = nil
-        @response_message = ''
-        @error = false
-        @success = true
-      else
-        if response.code == 200
-          if @response_body.has_key?(:errorCode)
-            @response_code = @response_body[:errorCode]
-            @response_message = @response_body[:errorMsg]
+          if response.code == 200
+            lines = CSV.parse(response, :col_sep => ";")
+            if is_an_operation_response_code?(lines)
+              code, message = lines.first.first.split(/,/)
+              @response_body = {}
+              @response_code = code.to_i
+              @response_message = message
+              @error = true
+              @success = false
+            else
+              parameters = lines[0].collect! {|row| row.to_sym}
+              lines.shift
+              if lines.count > 1
+                @response_body = []
+                lines.each do |line|
+                  @response_body << Hash[parameters.zip line]
+                end
+              else
+                @response_body = Hash[parameters.zip lines[0]]
+              end
+              @response_code = nil
+              @response_message = ''
+              @error = false
+              @success = true
+            end
+          else
             @error = true
             @success = false
-          else
-            @response_code = nil
-            @response_message = ''
-            @error = false
-            @success = true
           end
+        end
+
+      elsif @format == FORMATS::JSON
+        @response_body = JSON.parse(response.body, {symbolize_names: true})
+        @response_body = @response_body[0] if @response_body.instance_of? Array
+
+        @http_status_code = response.code
+        @http_status_message = response.message
+
+        if @response_body.blank?
+          #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
+          @response_code = nil
+          @response_message = ''
+          @error = false
+          @success = true
         else
-          @error = true
-          @success = false
-          raise StandardError, "Error: The HTTP request failed"
+          if response.code == 200
+            if @response_body.has_key?(:errorCode)
+              @response_code = @response_body[:errorCode]
+              @response_message = @response_body[:errorMsg]
+              @error = true
+              @success = false
+            else
+              @response_code = nil
+              @response_message = ''
+              @error = false
+              @success = true
+            end
+          else
+            @error = true
+            @success = false
+            raise StandardError, "Error: The HTTP request failed"
+          end
         end
       end
 
