@@ -120,6 +120,21 @@ module TomtomWebfleetConnect
         end
       end
 
+      def self.insert(api, tomtom_object, address, params = {})
+        order = TomtomWebfleetConnect::Models::Order.new(api, params)
+        order.tomtom_object = tomtom_object
+        order.address = address
+
+        response= api.send_request(order.insertDestinationOrderExtern(params))
+
+        if response.error
+          order = nil
+          raise InsertOrderError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+        return order
+      end
+
       def self.find(api, search_params = {})
 
         response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(search_params))
@@ -395,12 +410,17 @@ module TomtomWebfleetConnect
             ordertext: @ordertext,
             ordertype: @ordertype
         }
-        unless options.blank?
-          defaults = defaults.merge(options)
+
+        unless @address.to_hash.blank?
+          defaults = defaults.merge(@address.to_hash)
         end
 
-        unless @address.blank?
-          defaults = defaults.merge(@address.to_hash)
+        unless @contact.to_hash.blank?
+          defaults = defaults.merge(@contact.to_hash)
+        end
+
+        unless options.blank?
+          defaults = defaults.merge(options)
         end
 
         return defaults
@@ -560,6 +580,8 @@ module TomtomWebfleetConnect
 
   class CreateOrderError < StandardError
   end
+  class InsertOrderError < StandardError
+  end
   class FindOrderError < StandardError
   end
   class AllOrderForObjectError < StandardError
@@ -593,6 +615,15 @@ module TomtomWebfleetConnect
 
     def to_s
       ""
+    end
+
+    def to_hash
+      object_hash= Hash.new
+
+      object_hash = object_hash.merge({contact: @contact}) unless @contact.blank?
+      object_hash = object_hash.merge({contacttel: @contacttel}) unless @contacttel.blank?
+
+      return object_hash
     end
 
   end

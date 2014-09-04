@@ -38,6 +38,15 @@ describe TomtomWebfleetConnect::Models::Order do
       client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'], true))
     end
 
+    it "insert order" do
+
+      addresse= TomtomWebfleetConnect::Models::Address.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
+
+      order = TomtomWebfleetConnect::Models::Order.insert(client, @tomtom_object, addresse, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test'})
+
+      expect(order).to_not be_nil
+    end
+
     it "all_for_object" do
 
       (0...3).each do |i|
@@ -66,10 +75,10 @@ describe TomtomWebfleetConnect::Models::Order do
       addresse= TomtomWebfleetConnect::Models::Address.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
 
       (0...3).each do |i|
-        TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test'})
+        TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test'})
       end
 
-      orders= TomtomWebfleetConnect::Models::Order.all(client,{range_pattern: TomtomWebfleetConnect::Models::TomtomDate.new.range_pattern})
+      orders= TomtomWebfleetConnect::Models::Order.all(client, {range_pattern: TomtomWebfleetConnect::Models::TomtomDate.new.range_pattern})
 
       orders.each do |order|
         order.cancel unless (order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::FINISHED or order.state.orderstate == TomtomWebfleetConnect::Models::OrderState::STATES::CANCELLED)
@@ -90,7 +99,7 @@ describe TomtomWebfleetConnect::Models::Order do
       tomorrow = TomtomWebfleetConnect::Models::TomtomDate.tomorrow
 
       (0...3).each do |i|
-        TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse ,{orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Tomorrow order', orderdate: tomorrow.date_for_create, ordertime: tomorrow.time_for_create})
+        TomtomWebfleetConnect::Models::Order.create_with_destination(client, @tomtom_object, addresse, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Tomorrow order', orderdate: tomorrow.date_for_create, ordertime: tomorrow.time_for_create})
       end
 
       orders= TomtomWebfleetConnect::Models::Order.all(client, tomorrow.get_range_pattern_full_day)
