@@ -428,6 +428,10 @@ module TomtomWebfleetConnect
           defaults = defaults.merge(@contact.to_hash)
         end
 
+        unless @tomtom_object.to_hash.blank?
+          defaults = defaults.merge(@tomtom_object.to_hash)
+        end
+
         unless options.blank?
           defaults = defaults.merge(options)
         end
