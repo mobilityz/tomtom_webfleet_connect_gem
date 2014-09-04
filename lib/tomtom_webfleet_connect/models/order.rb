@@ -161,9 +161,14 @@ module TomtomWebfleetConnect
         if response.error
           raise AllOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
-          response.response_body.each do |line_order|
-            orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
+          if response.response_body.instance_of?(Hash)
+            orders << TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
+          elsif response.response_body.instance_of?(Array)
+            response.response_body.each do |line_order|
+              orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
+            end
           end
+
         end
 
         return orders
@@ -179,8 +184,12 @@ module TomtomWebfleetConnect
         if response.error
           raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
         else
-          response.response_body.each do |line_order|
-            orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
+          if response.response_body.instance_of?(Hash)
+            orders << TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
+          elsif response.response_body.instance_of?(Array)
+            response.response_body.each do |line_order|
+              orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
+            end
           end
         end
 
