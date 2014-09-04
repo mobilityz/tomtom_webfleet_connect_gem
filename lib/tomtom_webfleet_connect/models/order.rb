@@ -198,10 +198,19 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def save
-        response= @address.blank? ? api.send_request(sendOrderExtern) : api.send_request(sendDestinationOrderExtern)
+        response= @address.blank? ? @api.send_request(sendOrderExtern) : @api.send_request(sendDestinationOrderExtern)
 
         if response.error
           raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+      end
+
+      def assign
+        response= @api.send_request(assignOrderExtern)
+
+        if response.error
+          raise AssignOrderError, "Error #{response.response_code}: #{response.response_message}"
         end
 
       end
@@ -227,7 +236,7 @@ module TomtomWebfleetConnect
       end
 
       def update(ordertext, orderautomations= nil)
-        response = api.send_request(updateOrderExtern(orderautomations))
+        response = @api.send_request(updateOrderExtern(orderautomations))
 
         if response.error
           raise UpdateOrderExternError, "Error #{response.response_code}: #{response.response_message}"
@@ -243,7 +252,7 @@ module TomtomWebfleetConnect
         old_addr = @address
         @address = address
 
-        response= api.send_request(updateOrderExtern(updateDestinationOrderExtern(params)))
+        response= @api.send_request(updateOrderExtern(updateDestinationOrderExtern(params)))
 
         if response.error
           @address = old_addr
@@ -278,7 +287,7 @@ module TomtomWebfleetConnect
 
       # Get Order on Webfleet and reset Order object
       def refresh
-        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
+        response= @api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
 
         if response.error
           raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
@@ -581,6 +590,8 @@ module TomtomWebfleetConnect
   class CreateOrderError < StandardError
   end
   class InsertOrderError < StandardError
+  end
+  class AssignOrderError < StandardError
   end
   class FindOrderError < StandardError
   end
