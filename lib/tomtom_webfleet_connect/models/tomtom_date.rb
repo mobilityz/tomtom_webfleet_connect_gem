@@ -16,7 +16,7 @@ module TomtomWebfleetConnect
             ['Four days ago', FOUR_DAY_AGO = 'd-4'],
             ['Five days ago', FIVE_DAY_AGO = 'd-5'],
             ['Six days ago', SIX_DAY_AGO = 'd-6'],
-            ['Current week', CURRENT_WEEk = 'w0'],
+            ['Current week', CURRENT_WEEK = 'w0'],
             ['Last week', LAST_WEEK = 'w-1'],
             ['Two weeks ago', TWO_WEEKS_AGO = 'w-2'],
             ['Three weeks ago', THREE_WEEKS_AGO = 'w-3'],
