@@ -3,38 +3,8 @@ module TomtomWebfleetConnect
     class TomtomUser
 
       attr_accessor :username, :realname, :company, :validfrom, :validto, :lastlogin, :profile, :profilename, :userinfo, :passwordexpiration, :useruid,
-                    :email, :info
-
-
-      module RIGHT_LEVELS
-        ALL = [
-            ['Allowed to access WEBFLEET.connect API', EXTERNAL_ACCESS = 'external_access'],
-            ['Allowed to change account settings.', FULL_ACCESS_ACCOUNTSETTINGS = 'full_access_accountsettings'],
-            ['User can change own settings.', EDIT_USERSETTINGS = 'edit_usersettings'],
-            ['User can change his own password.', CHANGE_PASSWORD = 'change_password'],
-            ['Access to trip related data.', TRIP_DATA_ACCESS = 'trip_data_access'],
-            ['Read/Write access to areas.', AREAS_FULL_ACCESS = 'areas_full_access'],
-            ['Read access to areas.', AREAS_READ_ACCESS = 'areas_read_access'],
-            ['Full access to order management functions.', ORDERS_FULL_ACCESS = 'orders_full_access'],
-            ['Read access to orders.', ORDERS_READ_ACCESS = 'orders_read_access'],
-            ['Access to the tachograph page', EXTERNAL_TACHOGRAPH_INTERFACE = 'external_tachograph_interface'],
-            ['Full read/write access to vehicles, messaging, tracking, change group association etc.', OBJECT_FULL_ACCESS = 'object_full_access'],
-            ['Full read/write access to vehicles, messaging, tracking', OBJECT_EXPERT_ACCESS = 'object_expert_access'],
-            ['Read access to vehicles, messaging, tracking', OBJECT_STANDARD_ACCESS = 'object_standard_access'],
-            ['Read access to vehicles, tracking, read messages', OBJECT_TRACKING = 'object_tracking'],
-            ['Read access to vehicles, view position', OBJECT_LOCATING = 'object_locating'],
-            ['Read access to vehicles, view position, messaging', OBJECT_LOCATING_AND_MESSAGING = 'object_locating_and_messaging'],
-            ['Read access to vehicles, view position, messaging', OBJECT_LOCATING_AND_COMMUNICATION = 'object_locating_and_communication'],
-            ['Read access to vehicles, messaging, no position info', OBJECT_MESSAGING = 'object_messaging'],
-            ['Read access to vehicles, view position', OBJECT_READ_ACCESS = 'object_read_access'],
-            ['Full edit access to addresses including address group assignments', ADDRESS_ADMIN_ACCESS = 'address_admin_access'],
-            ['Edit access to addresses', ADDRESS_EDIT_ACCESS = 'address_edit_access'],
-            ['Read access to addresses', ADDRESS_READ_ACCESS = 'address_read_access'],
-            ['Full edit access to drivers, including driver group assignments', DRIVER_ADMIN_ACCESS = 'driver_admin_access'],
-            ['Edit access to drivers', DRIVER_EDIT_ACCESS = 'driver_edit_access'],
-            ['Read access to drivers', DRIVER_READ_ACCESS = 'driver_read_access']
-        ]
-      end
+                    :email, :info,
+                    :right
 
       module PROFILES
         ALL = [
@@ -66,9 +36,136 @@ module TomtomWebfleetConnect
 
         @email = params[:email].present? ? params[:email][0...255] : ''
         @info = params[:info].present? ? params[:info][0...500] : ''
+
+        @right = TomtomWebfleetConnect::Models::TomtomUser::UserRight.new(params)
       end
 
-      # private
+      class << self
+
+        def create(api, params = {})
+          user = TomtomWebfleetConnect::Models::TomtomUser.new(api, params)
+
+          response = api.send_request(user.insert_user)
+
+          if response.error
+            user = nil
+            raise CreateUserError, "Error #{response.response_code}: #{response.response_message}"
+          end
+
+          user
+        end
+
+        # Filter used to match any user name, real name and/or company name in the
+        # account containing the indicated string, also as substring.
+        def where(api, username_filter, realname_filter, company_filter)
+          users = []
+          params = {}
+
+          unless username_filter.blank?
+            params = params.merge({username_filter: username_filter})
+          end
+
+          unless realname_filter.blank?
+            params = params.merge({realname_filter: realname_filter})
+          end
+
+          unless company_filter.blank?
+            params = params.merge({company_filter: company_filter})
+          end
+
+          response = api.send_request(TomtomWebfleetConnect::Models::TomtomUser.show_users(params))
+
+          if response.error
+            raise ShowUsersError, "Error #{response.response_code}: #{response.response_message}"
+          else
+            if response.response_body.instance_of?(Hash)
+              users << TomtomWebfleetConnect::Models::TomtomUser.new(api, response.response_body)
+            elsif response.response_body.instance_of?(Array)
+              response.response_body.each do |line_order|
+                users << TomtomWebfleetConnect::Models::TomtomUser.new(api, line_order)
+              end
+            end
+          end
+
+          users
+        end
+      end
+
+      def update(params)
+        response = @api.send_request(update_user(params))
+
+        if response.error
+          raise UpdateUserError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          update_params(params)
+        end
+
+        self
+      end
+
+      def delete
+        response = @api.send_request(delete_user)
+
+        if response.error
+          raise DeleteUserError, "Error #{response.response_code}: #{response.response_message}"
+        end
+
+        self
+      end
+
+      # Get User on Webfleet and reset User object
+      def refresh
+        params = {}
+
+        unless @username.blank?
+          params = params.merge({username_filter: @username})
+        end
+
+        unless @realname.blank?
+          params = params.merge({realname_filter: @realname})
+        end
+
+        unless @company.blank?
+          params = params.merge({company_filter: @company})
+        end
+
+        response = api.send_request(TomtomWebfleetConnect::Models::TomtomUser.show_users(params))
+
+        if response.error
+          raise RefreshUserError, "Error #{response.response_code}: #{response.response_message}"
+        else
+          update_params(response.response_body)
+        end
+
+        self
+      end
+
+      private
+
+      def update_params(params)
+        @username = params[:username].present? ? params[:username][0...50] : ''
+        @realname = params[:realname].present? ? params[:realname][0...50] : ''
+        @company = params[:company].present? ? params[:company][0...50] : ''
+        @validfrom = params[:validfrom].present? ? params[:validfrom] : ''
+        @validto = params[:validto].present? ? params[:validto] : ''
+        @lastlogin = params[:lastlogin].present? ? params[:lastlogin] : ''
+        @profile = params[:profile].present? ? params[:profile][0...50] : ''
+        @profilename = params[:profilename].present? ? params[:profilename] : ''
+        @userinfo = params[:userinfo].present? ? params[:userinfo][0...4000] : ''
+        @passwordexpiration = params[:passwordexpiration].present? ? params[:passwordexpiration] : ''
+        @useruid = params[:useruid].present? ? params[:useruid][0...30] : ''
+
+        @email = params[:email].present? ? params[:email][0...255] : ''
+        @info = params[:info].present? ? params[:info][0...500] : ''
+      end
+
+      def get_hash_for_insert(params)
+        object_hash= Hash.new
+
+
+
+        object_hash
+      end
 
       # This actions returns a list of all existing users within the account along with the last
       # recorded login time.
@@ -522,4 +619,87 @@ module TomtomWebfleetConnect
 
     end
   end
+
+  class CreateUserError < StandardError
+  end
+  class UpdateUserError < StandardError
+  end
+  class ShowUsersError < StandardError
+  end
+  class DeleteUserError < StandardError
+  end
+  class RefreshUserError < StandardError
+  end
+
+  class UserRight
+
+    attr_accessor :rightlevel, :entityuid, :entitytype
+
+    module RIGHT_LEVELS
+      ALL = [
+          ['Allowed to access WEBFLEET.connect API', EXTERNAL_ACCESS = 'external_access'],
+          ['Allowed to change account settings.', FULL_ACCESS_ACCOUNTSETTINGS = 'full_access_accountsettings'],
+          ['User can change own settings.', EDIT_USERSETTINGS = 'edit_usersettings'],
+          ['User can change his own password.', CHANGE_PASSWORD = 'change_password'],
+          ['Access to trip related data.', TRIP_DATA_ACCESS = 'trip_data_access'],
+          ['Read/Write access to areas.', AREAS_FULL_ACCESS = 'areas_full_access'],
+          ['Read access to areas.', AREAS_READ_ACCESS = 'areas_read_access'],
+          ['Full access to order management functions.', ORDERS_FULL_ACCESS = 'orders_full_access'],
+          ['Read access to orders.', ORDERS_READ_ACCESS = 'orders_read_access'],
+          ['Access to the tachograph page', EXTERNAL_TACHOGRAPH_INTERFACE = 'external_tachograph_interface'],
+          ['Full read/write access to vehicles, messaging, tracking, change group association etc.', OBJECT_FULL_ACCESS = 'object_full_access'],
+          ['Full read/write access to vehicles, messaging, tracking', OBJECT_EXPERT_ACCESS = 'object_expert_access'],
+          ['Read access to vehicles, messaging, tracking', OBJECT_STANDARD_ACCESS = 'object_standard_access'],
+          ['Read access to vehicles, tracking, read messages', OBJECT_TRACKING = 'object_tracking'],
+          ['Read access to vehicles, view position', OBJECT_LOCATING = 'object_locating'],
+          ['Read access to vehicles, view position, messaging', OBJECT_LOCATING_AND_MESSAGING = 'object_locating_and_messaging'],
+          ['Read access to vehicles, view position, messaging', OBJECT_LOCATING_AND_COMMUNICATION = 'object_locating_and_communication'],
+          ['Read access to vehicles, messaging, no position info', OBJECT_MESSAGING = 'object_messaging'],
+          ['Read access to vehicles, view position', OBJECT_READ_ACCESS = 'object_read_access'],
+          ['Full edit access to addresses including address group assignments', ADDRESS_ADMIN_ACCESS = 'address_admin_access'],
+          ['Edit access to addresses', ADDRESS_EDIT_ACCESS = 'address_edit_access'],
+          ['Read access to addresses', ADDRESS_READ_ACCESS = 'address_read_access'],
+          ['Full edit access to drivers, including driver group assignments', DRIVER_ADMIN_ACCESS = 'driver_admin_access'],
+          ['Edit access to drivers', DRIVER_EDIT_ACCESS = 'driver_edit_access'],
+          ['Read access to drivers', DRIVER_READ_ACCESS = 'driver_read_access']
+      ]
+    end
+
+    module ENTITY_TYPE
+      ALL = [
+          ['object', OBJECT = 'object'],
+          ['objectgroup', OBJECT_GROUP = 'objectgroup'],
+          ['driver', DRIVER = 'driver'],
+          ['drivergroup', DRIVER_GROUP = 'drivergroup'],
+          ['address', ADDRESS = 'address'],
+          ['addressgroup', ADDRESS_GROUP = 'addressgroup']
+      ]
+    end
+
+    public
+
+    def initialize(params = {})
+      @rightlevel = params[:rightlevel] if params[:rightlevel].present?
+      @entityuid = params[:entityuid] if params[:entityuid].present?
+      @entitytype = params[:entitytype] if params[:entitytype].present?
+    end
+
+    def update(params)
+      @rightlevel = params[:rightlevel].present? ? params[:rightlevel] : nil
+      @entityuid = params[:entityuid].present? ? params[:entityuid] : nil
+      @entitytype = params[:entitytype].present? ? params[:entitytype] : nil
+    end
+
+    def to_hash
+      object_hash= Hash.new
+
+      object_hash = object_hash.merge({rightlevel: @rightlevel}) unless @rightlevel.blank?
+      object_hash = object_hash.merge({entityuid: @entityuid}) unless @entityuid.blank?
+      object_hash = object_hash.merge({entitytype: @entitytype}) unless @entitytype.blank?
+
+      object_hash
+    end
+
+  end
+
 end

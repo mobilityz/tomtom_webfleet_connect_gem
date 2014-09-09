@@ -168,7 +168,6 @@ module TomtomWebfleetConnect
               orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
             end
           end
-
         end
 
         return orders

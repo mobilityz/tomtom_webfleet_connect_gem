@@ -37,9 +37,9 @@ describe TomtomWebfleetConnect::Models::TomtomUser do
 
   describe "Tomtom methods" do
 
-    it 'Show users' do
+    xit 'Show users' do
 
-      response = client.send_request(TomtomWebfleetConnect::Models::TomtomUser.show_users({username: 'api'}))
+      response = client.send_request(TomtomWebfleetConnect::Models::TomtomUser.show_users({username_filter: ENV['USER_TEST_NAME']}))
 
       expect(response.http_status_code).to eq(200)
       expect(response.http_status_message).to eq("OK")
@@ -51,7 +51,7 @@ describe TomtomWebfleetConnect::Models::TomtomUser do
 
     xit 'Change password' do
 
-      response = client.send_request(TomtomWebfleetConnect::Models::TomtomUser.change_password({oldpassword: '', newpassword: ''}))
+      response = client.send_request(TomtomWebfleetConnect::Models::TomtomUser.change_password({oldpassword: ENV['USER_PASSWORD'], newpassword: 'testgem'}))
 
       expect(response.http_status_code).to eq(200)
       expect(response.http_status_message).to eq("OK")
@@ -61,9 +61,15 @@ describe TomtomWebfleetConnect::Models::TomtomUser do
       expect(response.success).to eq(true)
     end
 
-    it 'Insert user' do
+    xit 'Insert user' do
 
-      user= TomtomWebfleetConnect::Models::TomtomUser.new(client)
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client, {username: 'UserName-Test-Gem',
+                                                          realname: 'RealName-Test-Gem',
+                                                          email: ENV['EMAIL-TEST'],
+                                                          profile: TomtomWebfleetConnect::Models::TomtomUser::PROFILES::ADMIN,
+                                                          new_password: 'azerty?59',
+                                                          info: 'Create by tomtom gem',
+                                                          company: 'TestCompany'})
 
       response = client.send_request(user.insert_user)
 
@@ -75,89 +81,89 @@ describe TomtomWebfleetConnect::Models::TomtomUser do
       expect(response.success).to eq(true)
     end
 
-    # it '' do
-    #
-    #   user= TomtomWebfleetConnect::Models::TomtomUser
-    #
-    #   response = client.send_request(user.)
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    # end
-    #
-    # it '' do
-    #
-    #   user= TomtomWebfleetConnect::Models::TomtomUser
-    #
-    #   response = client.send_request(user.)
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    # end
-    #
-    # it '' do
-    #
-    #   user= TomtomWebfleetConnect::Models::TomtomUser
-    #
-    #   response = client.send_request(user.)
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    # end
-    #
-    # it '' do
-    #
-    #   user= TomtomWebfleetConnect::Models::TomtomUser
-    #
-    #   response = client.send_request(user.)
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    # end
-    #
-    # it '' do
-    #
-    #   user= TomtomWebfleetConnect::Models::TomtomUser
-    #
-    #   response = client.send_request(user.)
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    # end
-    #
-    # it '' do
-    #
-    #   user= TomtomWebfleetConnect::Models::TomtomUser
-    #
-    #   response = client.send_request(user.)
-    #
-    #   expect(response.http_status_code).to eq(200)
-    #   expect(response.http_status_message).to eq("OK")
-    #   expect(response.response_message).to eq("")
-    #   expect(response.response_code).to eq(nil)
-    #   expect(response.error).to eq(false)
-    #   expect(response.success).to eq(true)
-    # end
+    xit 'Update user' do
+
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client,{username: 'UserName-Test-Gem'})
+
+      response = client.send_request(user.update_user({realname: 'NewNameUpdate'}))
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+    end
+
+    xit 'Delete user' do
+
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client,{username: 'UserName-Test-Gem'})
+
+      response = client.send_request(user.delete_user)
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+    end
+
+    xit 'Get user rights' do
+
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client,{username: 'UserName-Test-Gem'})
+
+      response = client.send_request(user.get_user_rights)
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+    end
+
+    xit 'set user right' do
+
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client,{username: 'UserName-Test-Gem'})
+
+      response = client.send_request(user.set_user_right(TomtomWebfleetConnect::Models::TomtomUser::UserRight::RIGHT_LEVELS::EXTERNAL_ACCESS))
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+    end
+
+    xit 'reset user rights' do
+
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client,{username: 'UserName-Test-Gem'})
+
+      response = client.send_request(user.reset_user_rights)
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+    end
+
+    xit 'remove user right' do
+
+      user= TomtomWebfleetConnect::Models::TomtomUser.new(client,{username: 'UserName-Test-Gem'})
+
+      response = client.send_request(user.remove_user_right(TomtomWebfleetConnect::Models::TomtomUser::UserRight::RIGHT_LEVELS::EXTERNAL_ACCESS))
+
+      expect(response.http_status_code).to eq(200)
+      expect(response.http_status_message).to eq("OK")
+      expect(response.response_message).to eq("")
+      expect(response.response_code).to eq(nil)
+      expect(response.error).to eq(false)
+      expect(response.success).to eq(true)
+    end
 
   end
 
