@@ -76,10 +76,12 @@ module TomtomWebfleetConnect
         end
 
       elsif @format == FORMATS::JSON
-        puts '\nreponse tomtom pure : \n' + response.to_yaml
-        @response_body = JSON.parse(response.body, {symbolize_names: true})
-        puts '\nreponse tomtom parsee : \n' + @response_body
-        @response_body = @response_body #@response_body[0] if @response_body.instance_of? Array
+        puts '', 'reponse :' + response.to_json
+        puts 'code :' + response.code.to_s
+        puts 'message :' + response.message.to_s
+        puts 'header :' + response.headers.inspect, ''
+
+        @response_body = response.to_json
 
         @http_status_code = response.code
         @http_status_message = response.message
@@ -92,7 +94,7 @@ module TomtomWebfleetConnect
           @success = true
         else
           if response.code == 200
-            if @response_body.has_key?(:errorCode)
+            if not @response_body.is_a? Array and @response_body.has_key?(:errorCode)
               @response_code = @response_body[:errorCode]
               @response_message = @response_body[:errorMsg]
               @error = true
@@ -106,7 +108,7 @@ module TomtomWebfleetConnect
           else
             @error = true
             @success = false
-            raise StandardError, "Error: The HTTP request failed"
+            raise StandardError, 'Error: The HTTP request failed'
           end
         end
       end
