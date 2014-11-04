@@ -66,7 +66,7 @@ describe TomtomWebfleetConnect::API do
       expect(@tomtom_webfleet_connect.use_UTF8).to eq(@use_UTF8)
     end
   end
-  
+
   describe 'method' do
 
     before do
@@ -119,6 +119,7 @@ describe TomtomWebfleetConnect::API do
       expect(response.response_code).to eq(nil)
       expect(response.error).to eq(false)
       expect(response.success).to eq(true)
+      expect(response.response_body).to be_empty
     end
 
     it 'with action return one line' do

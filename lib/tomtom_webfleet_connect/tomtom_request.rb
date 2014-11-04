@@ -22,9 +22,8 @@ module TomtomWebfleetConnect
       @request_url = add_options_to_url(url, options.except(:action))
       puts @request_url
       response_tomtom = HTTParty.get(@request_url)
-      #puts response_tomtom
       @response = @response.format_response(response_tomtom)
-      # puts @response.to_json
+      puts '', 'reponse finale :' + @response.to_json, ''
       return @response
     end
 

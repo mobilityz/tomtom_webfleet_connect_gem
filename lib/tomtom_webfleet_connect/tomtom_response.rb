@@ -34,7 +34,7 @@ module TomtomWebfleetConnect
         if response.body.empty?
           #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
           @http_status_code = 200
-          @http_status_message = "OK"
+          @http_status_message = 'OK'
           @response_body = {}
           @response_code = nil
           @response_message = ''
@@ -45,7 +45,7 @@ module TomtomWebfleetConnect
           @http_status_code = response.code
 
           if response.code == 200
-            lines = CSV.parse(response, :col_sep => ";")
+            lines = CSV.parse(response, :col_sep => ';')
             if is_an_operation_response_code?(lines)
               code, message = lines.first.first.split(/,/)
               @response_body = {}
@@ -76,40 +76,31 @@ module TomtomWebfleetConnect
         end
 
       elsif @format == FORMATS::JSON
-        puts '', 'reponse :' + response.to_json
-        puts 'code :' + response.code.to_s
-        puts 'message :' + response.message.to_s
-        puts 'header :' + response.headers.inspect, ''
+        #puts '', 'reponse :' + response.to_json
+        #puts 'code :' + response.code.to_s
+        #puts 'message :' + response.message.to_s
+        #puts 'header :' + response.headers.to_json, ''
 
-        @response_body = response.to_json
-
+        @response_body = JSON.parse(response.body, {symbolize_names: true})
         @http_status_code = response.code
         @http_status_message = response.message
+        @response_code = nil
+        @response_message = ''
 
-        if @response_body.blank?
-          #All methods that transmit data, e.g. all send ... methods, return nothing on successful completion, that is the response is empty
-          @response_code = nil
-          @response_message = ''
-          @error = false
-          @success = true
-        else
-          if response.code == 200
-            if not @response_body.is_a? Array and @response_body.has_key?(:errorCode)
-              @response_code = @response_body[:errorCode]
-              @response_message = @response_body[:errorMsg]
-              @error = true
-              @success = false
-            else
-              @response_code = nil
-              @response_message = ''
-              @error = false
-              @success = true
-            end
-          else
+        if response.code == 200
+          if response.headers['x-webfleet-errorcode']
+            @response_code = response.headers['x-webfleet-errorcode'].to_i
+            @response_message = response.headers['x-webfleet-errormessage']
             @error = true
             @success = false
-            raise StandardError, 'Error: The HTTP request failed'
+          else
+            @error = false
+            @success = true
           end
+        else
+          @error = true
+          @success = false
+          raise StandardError, 'Error: The HTTP request failed'
         end
       end
 
@@ -117,9 +108,9 @@ module TomtomWebfleetConnect
     end
 
     private
-    def is_an_operation_response_code?(response)
-      return response.first.size == 1 ? true : false
-    end
+      def is_an_operation_response_code?(response)
+        return response.first.size == 1 ? true : false
+      end
 
   end
 end

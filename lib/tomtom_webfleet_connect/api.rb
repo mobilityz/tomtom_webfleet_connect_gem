@@ -57,7 +57,7 @@ module TomtomWebfleetConnect
       response = send_request(options)
       
       if response.success
-        response.response_body[:time] = response.response_body[:time].sub("PT", "").sub("S", "").to_i
+        response.response_body[0][:time] = response.response_body[0][:time].sub('PT', '').sub('S', '').to_i
       end
       return response
     end
