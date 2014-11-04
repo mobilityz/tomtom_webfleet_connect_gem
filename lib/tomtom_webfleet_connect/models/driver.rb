@@ -2,8 +2,7 @@ module TomtomWebfleetConnect
   module Models
     class Driver
 
-      attr_accessor :client,
-                    :driverno, :drivername, :drivertelmobile, :driveruid
+      attr_accessor :client, :driverno, :drivername, :drivertelmobile, :driveruid
 
       public
 

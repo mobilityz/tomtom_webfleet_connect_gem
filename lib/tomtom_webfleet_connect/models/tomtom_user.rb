@@ -17,8 +17,6 @@ module TomtomWebfleetConnect
         ]
       end
 
-
-
       def initialize(api, params = {})
         @api = api
 
