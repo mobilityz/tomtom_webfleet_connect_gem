@@ -76,7 +76,7 @@ module TomtomWebfleetConnect
         end
 
       elsif @format == FORMATS::JSON
-        puts '\nreponse tomtom pure : \n' + response
+        puts '\nreponse tomtom pure : \n' + response.to_yaml
         @response_body = JSON.parse(response.body, {symbolize_names: true})
         puts '\nreponse tomtom parsee : \n' + @response_body
         @response_body = @response_body #@response_body[0] if @response_body.instance_of? Array
