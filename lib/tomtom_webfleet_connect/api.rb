@@ -71,7 +71,7 @@ module TomtomWebfleetConnect
     end
     
     def get_url_with_parameters
-      get_root_url + "?" + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=#{self.use_ISO8601}"
+      get_root_url + "?" + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=#{self.response_format}"
     end
 
     def get_base_url(user)
