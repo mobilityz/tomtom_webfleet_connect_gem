@@ -67,11 +67,11 @@ module TomtomWebfleetConnect
     #private
 
     def get_root_url
-      "https://csv.business.tomtom.com/extern"
+      'https://csv.business.tomtom.com/extern'
     end
     
     def get_url_with_parameters
-      get_root_url + "?" + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=#{self.response_format}"
+      get_root_url + '?' + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=#{self.response_format}"
     end
 
     def get_base_url(user)
@@ -80,7 +80,7 @@ module TomtomWebfleetConnect
 
     def get_method_url(method, user)
       # puts user.to_json
-      counter = TomtomWebfleetConnect::Models::MethodCounter.where("user_id = ? and tomtom_method_id = ?", user.id, method.id).first
+      counter = TomtomWebfleetConnect::Models::MethodCounter.where('user_id = ? and tomtom_method_id = ?', user.id, method.id).first
       if counter.nil?
         counter = TomtomWebfleetConnect::Models::MethodCounter.create user_id: user.id, tomtom_method_id: method.id
         counter.start_counter
@@ -106,16 +106,15 @@ module TomtomWebfleetConnect
     #logger.info { "iso8601 : " + journey.estimate.departure.iso8601.to_s }
     
     def date_to_tomtom_day(date)
-      return date.strftime("%a").downcase
+      return date.strftime('a').downcase
     end
 
     def date_to_tomtom_time(date)
-      return date.strftime("%T")
+      return date.strftime('%T')
     end
     #FIXME pb sur la date passé en paramètre
-    #date = start_date.strftime("%FT%TZ")
     def date_to_tomtom_date(date)
-      return date.date.strftime("%FT%TZ")
+      return date.date.strftime('%FT%TZ')
     end
 
   end

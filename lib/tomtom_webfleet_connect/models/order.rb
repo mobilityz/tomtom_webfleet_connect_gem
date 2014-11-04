@@ -92,10 +92,9 @@ module TomtomWebfleetConnect
         order = TomtomWebfleetConnect::Models::Order.new(api, params)
         order.tomtom_object = tomtom_object
 
-        response= api.send_request(order.sendOrderExtern)
+        response = api.send_request(order.sendOrderExtern)
 
         if response.error
-          order = nil
           raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
         end
 
@@ -108,12 +107,11 @@ module TomtomWebfleetConnect
 
         order = TomtomWebfleetConnect::Models::Order.new(api, params)
         order.tomtom_object = tomtom_object
-        order.address= destination
+        order.address = destination
 
         response= api.send_request(order.sendDestinationOrderExtern(destination.to_hash.merge(params)))
 
         if response.error
-          order = nil
           raise CreateOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
           return order
@@ -128,7 +126,6 @@ module TomtomWebfleetConnect
         response= api.send_request(order.insertDestinationOrderExtern(params))
 
         if response.error
-          order = nil
           raise InsertOrderError, "Error #{response.response_code}: #{response.response_message}"
         end
 
@@ -140,7 +137,6 @@ module TomtomWebfleetConnect
         response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(search_params))
 
         if response.error
-          order = nil
           raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
           order = TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
@@ -155,8 +151,8 @@ module TomtomWebfleetConnect
 
       # TODO implement all function
       def self.all(api, params = {})
-        orders= []
-        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(params))
+        orders = []
+        response = api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(params))
 
         if response.error
           raise AllOrderError, "Error #{response.response_code}: #{response.response_message}"
@@ -175,10 +171,10 @@ module TomtomWebfleetConnect
 
 
       def self.all_for_object(api, objectno, params = TomtomDate.new({range_pattern: TomtomDate::RANGE_PATTERN::CURRENT_MONTH}).get_range_pattern)
-        orders= []
+        orders = []
         params = params.blank? ? {objectno: objectno} : params.merge({objectno: objectno})
 
-        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(params))
+        response = api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(params))
 
         if response.error
           raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
@@ -198,7 +194,7 @@ module TomtomWebfleetConnect
 
       def self.generate_orderid
         o = [('a'..'z'), ('A'..'Z')].map { |i| i.to_a }.flatten
-        orderid = (0...20).map { o[rand(o.length)] }.join
+        (0...20).map { o[rand(o.length)] }.join
       end
 
       # ______________________________________________________
@@ -249,7 +245,7 @@ module TomtomWebfleetConnect
         if response.error
           raise UpdateOrderExternError, "Error #{response.response_code}: #{response.response_message}"
         else
-          @ordertext= ordertext[0...500]
+          @ordertext = ordertext[0...500]
         end
 
         self
@@ -260,7 +256,7 @@ module TomtomWebfleetConnect
         old_addr = @address
         @address = address
 
-        response= @api.send_request(updateOrderExtern(updateDestinationOrderExtern(params)))
+        response = @api.send_request(updateOrderExtern(updateDestinationOrderExtern(params)))
 
         if response.error
           @address = old_addr
@@ -295,7 +291,7 @@ module TomtomWebfleetConnect
 
       # Get Order on Webfleet and reset Order object
       def refresh
-        response= @api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
+        response = @api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern({orderid: orderid}))
 
         if response.error
           raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
