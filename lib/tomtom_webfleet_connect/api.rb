@@ -2,9 +2,7 @@ module TomtomWebfleetConnect
   class API
     attr_accessor :key, :account, :lang, :use_ISO8601, :use_UTF8, :response_format
     
-    def initialize(key = nil, account = nil, default_parameters = {}, response_format = TomtomWebfleetConnect::TomtomResponse::FORMATS::CSV)
-
-      @response_format = response_format
+    def initialize(key = nil, account = nil, default_parameters = {})
 
       @key = key || self.key
       @key = @key.strip if @key
@@ -15,6 +13,7 @@ module TomtomWebfleetConnect
       @lang = default_parameters.delete(:lang) || self.lang
       @use_ISO8601 = default_parameters.delete(:use_ISO8601) || self.use_ISO8601
       @use_UTF8 = default_parameters.delete(:use_UTF8) || self.use_UTF8
+      @response_format = default_parameters.delete(:response_format) || self.response_format
       
       @default_params = {key: @key, account: @account}.merge(default_parameters)
     end
@@ -64,7 +63,6 @@ module TomtomWebfleetConnect
     end
 
 
-    
 
     #private
 

@@ -15,7 +15,7 @@ module TomtomWebfleetConnect
       ]
     end
 
-    def initialize(format = FORMATS::CSV)
+    def initialize(format = FORMATS::JSON)
       @format = format
     end
 
