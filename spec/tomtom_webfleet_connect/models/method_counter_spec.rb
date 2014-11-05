@@ -8,35 +8,35 @@ describe TomtomWebfleetConnect::Models::MethodCounter do
   let(:method_counter) { TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user.id, tomtom_method_id: method.id }
   subject { method_counter }
   
-  its(:user_id) {should_not be_nil}
-  its(:tomtom_method_id) {should_not be_nil}
-  
-  it { should respond_to :counter_can_be_reset? }
-  it { should respond_to :reset_counter }
-  it { should respond_to :start_counter }
-  it { should respond_to :increment_counter }
+  its(:user_id) {is_expected.not_to be_nil}
+  its(:tomtom_method_id) {is_expected.not_to be_nil}
+
+  it { is_expected.to respond_to :counter_can_be_reset? }
+  it { is_expected.to respond_to :reset_counter }
+  it { is_expected.to respond_to :start_counter }
+  it { is_expected.to respond_to :increment_counter }
 
   it 'counter should not be a string' do
     method_counter.counter = 'string'
-    method_counter.should_not be_valid
+    expect(method_counter).not_to be_valid
   end
   
   it 'counter should not be a float' do
     method_counter.counter = 1.3
-    method_counter.should_not be_valid
+    expect(method_counter).not_to be_valid
   end
 
   #DEPRECATED
   xit 'search method constant' do
     constant = TomtomWebfleetConnect::Models::MethodCounter.search_method_constant('showVehicleReportExtern')
-    constant.second[:method].should == 'showVehicleReportExtern'
-    constant.second[:quota].should == 10
-    constant.second[:quota_delay].should == 1
+    expect(constant.second[:method]).to eq('showVehicleReportExtern')
+    expect(constant.second[:quota]).to eq(10)
+    expect(constant.second[:quota_delay]).to eq(1)
   end
   
   it 'counter should not be a float' do
     method_counter.counter = 1.3
-    method_counter.should_not be_valid
+    expect(method_counter).not_to be_valid
   end
 
   it 'with quota delay exceeded can be reset' do
@@ -53,14 +53,14 @@ describe TomtomWebfleetConnect::Models::MethodCounter do
 
   it 'increment nil counter should place counter at 1 and set start_at at now' do
     method_counter.increment_counter
-    method_counter.counter_start_at.should_not be_nil
+    expect(method_counter.counter_start_at).not_to be_nil
     expect(method_counter.counter).to eq(1)
   end
 
   it 'increment not nil counter should increment counter' do
     method_counter.start_counter
     method_counter.increment_counter
-    method_counter.counter_start_at.should_not be_nil
+    expect(method_counter.counter_start_at).not_to be_nil
     expect(method_counter.counter).to eq(2)
   end
 
@@ -68,8 +68,8 @@ describe TomtomWebfleetConnect::Models::MethodCounter do
     method = TomtomWebfleetConnect::Models::TomtomMethod.create! name: 'test', quota: 6, quota_delay: 1
     counter = TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user.id, tomtom_method_id: method.id, counter: 2, counter_start_at: DateTime.now - method.quota_delay.minutes + 1.minutes
     counter.reset_counter
-    method_counter.counter_start_at.should be_nil
-    method_counter.counter.should be_nil
+    expect(method_counter.counter_start_at).to be_nil
+    expect(method_counter.counter).to be_nil
   end
 
 end

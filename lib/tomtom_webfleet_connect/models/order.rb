@@ -135,7 +135,7 @@ module TomtomWebfleetConnect
         return order
       end
 
-      def self.find_with_id(api, orderid)
+      def self.find_by_id(api, orderid)
         TomtomWebfleetConnect::Models::Order.find(api, {orderid: orderid})
       end
 
