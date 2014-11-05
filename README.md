@@ -40,3 +40,17 @@ TomtomWebfleetConnect::Models::User.create(name: "name", password: "password")
 ```
 TomtomWebfleetConnect::Models::TomtomMethod.create name: "insertDriverExtern", quota:10, quota_delay: 1
 ```
+
+##On test :
+For rspec you need to create a local_env.yml in config directory to set environnement variable like this :
+```
+ACCOUNT: 'xxx'
+API_KEY: 'xxx'
+LANG: 'fr'
+FORMAT: 'json'
+USER_NAME: 'xxx'
+USER_PASSWORD: 'xxx'
+USER2_NAME: 'xxx'
+USER2_PASSWORD: 'xxx'
+```
+
