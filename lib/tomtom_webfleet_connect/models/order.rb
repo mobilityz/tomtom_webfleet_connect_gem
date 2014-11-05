@@ -16,16 +16,6 @@ module TomtomWebfleetConnect
         ]
       end
 
-      # module STATUSES
-      #   ALL = [
-      #       ['', NONE = ''],
-      #       ['Accepted', ACCEPTED = 'Accepted'],
-      #       ['Rejected', REJECTED = 'Rejected'],
-      #       ['Canceled', CANCELED = 'Canceled'],
-      #       ['Saved for later', SAVED_FOR_LATER = 'SavedForLater']
-      #   ]
-      # end
-
       module AUTOMATIONS
         ALL = [
             ['accept the order', ACCEPT_ORDER = '1'],
@@ -453,10 +443,7 @@ module TomtomWebfleetConnect
       # - General parameters
       #
       def cancelOrderExtern
-        defaults={
-            action: 'cancelOrderExtern',
-            orderid: @orderid
-        }
+        {action: 'cancelOrderExtern', orderid: @orderid}
       end
 
       # Assigns an existing order to an object and can be used to accomplish the following:
@@ -470,7 +457,7 @@ module TomtomWebfleetConnect
       # - General parameters
       #
       def assignOrderExtern(orderautomations = nil)
-        defaults={
+        defaults = {
             action: 'assignOrderExtern',
             orderid: @orderid,
             objectno: @tomtom_object.objectno
@@ -498,7 +485,7 @@ module TomtomWebfleetConnect
       # - General parameters
       #
       def reassignOrderExtern(orderautomations = nil)
-        defaults={
+        defaults = {
             action: 'reassignOrderExtern',
             objectid: @tomtom_object.objectno,
             orderid: @orderid,
@@ -521,11 +508,7 @@ module TomtomWebfleetConnect
       # - General parameters
       #
       def deleteOrderExtern(deleted_within_webfleet = false)
-        defaults={
-            action: 'deleteOrderExtern',
-            orderid: @orderid,
-            mark_deleted: (deleted_within_webfleet ? '1' : '0')
-        }
+        {action: 'deleteOrderExtern', orderid: @orderid, mark_deleted: (deleted_within_webfleet ? '1' : '0')}
       end
 
       # Removes all orders from the device and optionally marks them as deleted in
@@ -538,11 +521,7 @@ module TomtomWebfleetConnect
       # - General parameters
       #
       def self.clearOrdersExtern(objectno, deleted_within_webfleet = false)
-        defaults={
-            action: 'clearOrdersExtern',
-            objectno: objectno[0...10],
-            mark_deleted: (deleted_within_webfleet ? '1' : '0')
-        }
+        {action: 'clearOrdersExtern', objectno: objectno[0...10], mark_deleted: (deleted_within_webfleet ? '1' : '0')}
       end
 
       # Shows a list of orders that match the search parameters. Each entry shows the order
@@ -633,7 +612,7 @@ module TomtomWebfleetConnect
     end
 
     def to_s
-      ""
+      ''
     end
 
     def to_hash

@@ -79,16 +79,21 @@ module TomtomWebfleetConnect
     end
 
     def get_method_url(method, user)
-      # puts user.to_json
+      puts ''
       counter = TomtomWebfleetConnect::Models::MethodCounter.where('user_id = ? and tomtom_method_id = ?', user.id, method.id).first
+      puts 'counter : ' + counter.inspect
       if counter.nil?
+        puts 'counter nil ! '
         counter = TomtomWebfleetConnect::Models::MethodCounter.create user_id: user.id, tomtom_method_id: method.id
         counter.start_counter
       else
+        puts 'counter can be reset ? ' + counter.counter_can_be_reset?.to_s
         if counter.counter_can_be_reset?
+          puts 'counter reseted '
           counter.reset_counter
           counter.start_counter
         else
+          puts 'counter incremented '
           counter.increment_counter
         end
       end

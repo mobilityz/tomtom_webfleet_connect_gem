@@ -162,10 +162,11 @@ describe TomtomWebfleetConnect::API do
         TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user.id, tomtom_method_id: method.id
         TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user2.id, tomtom_method_id: method.id
 
-        puts TomtomWebfleetConnect::Models::User.all
+        puts TomtomWebfleetConnect::Models::User.all.inspect
 
         (0..13).each do |i|
           puts "------ essai #{i} ------"
+          puts TomtomWebfleetConnect::Models::MethodCounter.where(:tomtom_method_id => method.id).inspect
           response = client.send_request({action: 'showObjectReportExtern', filterstring: 'GPS-TEST-1'})
           if i >= 12
             expect(response.http_status_code).to eq(200)

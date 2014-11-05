@@ -49,10 +49,10 @@ module TomtomWebfleetConnect
       ##
       # return true if the counter can be reset
       def counter_can_be_reset?
-        if @counter_start_at.nil?
+        if counter_start_at.nil?
           false
         else
-          DateTime.now > @counter_start_at + @tomtom_method.quota_delay.minutes
+          DateTime.now > counter_start_at + tomtom_method.quota_delay.minutes
         end
       end
       
@@ -71,10 +71,10 @@ module TomtomWebfleetConnect
       end
 
       def increment_counter
-        if @counter.nil?
+        if counter.nil?
           start_counter
         else
-          self.update_attribute(:counter, @counter + 1)
+          update_attribute(:counter, counter + 1)
         end
       end
 

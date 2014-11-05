@@ -4,31 +4,6 @@ module TomtomWebfleetConnect
 
       attr_accessor :orderstate, :orderstate_time, :orderstate_longitude, :orderstate_latitude, :orderstate_postext, :orderstate_msgtext
 
-      # 0 - Not yet sent
-      # 100 - Sent
-      # 101 - Received
-      # 102 - Read
-      # 103 - Accepted
-      # 201 - Service order started
-      # 202 - Arrived at destination
-      # 203 - Work started
-      # 204 - Work finished
-      # 205 - Departed from destination
-      # 221 - Pickup order started
-      # 222 - Arrived at pick up location
-      # 223 - Pick up started
-      # 224 - Pick up finished
-      # 225 - Departed from pick up location
-      # 241 - Delivery order started
-      # 242 - Arrived at delivery location
-      # 243 - Delivery started
-      # 244 - Delivery finished
-      # 245 - Departed from delivery location
-      # 298 - Resumed
-      # 299 - Suspended
-      # 301 - Cancelled
-      # 302 - Rejected
-      # 401 - Finished
       module STATES
         ALL = [
             ['null', NONE = 'null'],
@@ -74,7 +49,7 @@ module TomtomWebfleetConnect
       end
 
       def to_s
-        ""
+        ''
       end
 
       def update(params)
