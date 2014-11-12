@@ -76,10 +76,10 @@ module TomtomWebfleetConnect
         end
 
       elsif @format == FORMATS::JSON
-        #puts '', 'reponse :' + response.to_json
-        #puts 'code :' + response.code.to_s
-        #puts 'message :' + response.message.to_s
-        #puts 'header :' + response.headers.to_json, ''
+        TomtomWebfleetConnect.logger.debug 'reponse :' + response.to_json
+        TomtomWebfleetConnect.logger.debug 'code :' + response.code.to_s
+        TomtomWebfleetConnect.logger.debug 'message :' + response.message.to_s
+        TomtomWebfleetConnect.logger.debug 'header :' + response.headers.to_json
 
         @response_body = JSON.parse(response.body, {symbolize_names: true})
         @http_status_code = response.code

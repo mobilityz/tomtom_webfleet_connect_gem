@@ -4,7 +4,7 @@ ruby '1.9.3'
 gem 'activerecord', '3.2.11'
 gem 'activemodel', '3.2.11' #, "~> 3.2.14"
 gem 'httparty', '0.10.0'
-gem "rack", "~> 1.5.2"
+gem 'rack', '~> 1.5.2'
 
 group :development, :test do
   gem 'rake'

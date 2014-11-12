@@ -123,13 +123,15 @@ module TomtomWebfleetConnect
       end
 
       def self.find(api, search_params = {})
-
-        response= api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(search_params))
+        order = nil
+        response = api.send_request(TomtomWebfleetConnect::Models::Order.showOrderReportExtern(search_params))
 
         if response.error
           raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
+        elsif not response.response_body.empty?
+          order = TomtomWebfleetConnect::Models::Order.new(api, response.response_body[0])
         else
-          order = TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
+
         end
 
         return order
@@ -147,8 +149,8 @@ module TomtomWebfleetConnect
         if response.error
           raise AllOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
-          if response.response_body.instance_of?(Hash)
-            orders << TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
+          if response.response_body[0].instance_of?(Hash)
+            orders << TomtomWebfleetConnect::Models::Order.new(api, response.response_body[0])
           elsif response.response_body.instance_of?(Array)
             response.response_body.each do |line_order|
               orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
@@ -169,8 +171,8 @@ module TomtomWebfleetConnect
         if response.error
           raise AllOrderForObjectError, "Error #{response.response_code}: #{response.response_message}"
         else
-          if response.response_body.instance_of?(Hash)
-            orders << TomtomWebfleetConnect::Models::Order.new(api, response.response_body)
+          if response.response_body[0].instance_of?(Hash)
+            orders << TomtomWebfleetConnect::Models::Order.new(api, response.response_body[0])
           elsif response.response_body.instance_of?(Array)
             response.response_body.each do |line_order|
               orders << TomtomWebfleetConnect::Models::Order.new(api, line_order)
@@ -286,7 +288,7 @@ module TomtomWebfleetConnect
         if response.error
           raise FindOrderError, "Error #{response.response_code}: #{response.response_message}"
         else
-          update_params(response.response_body)
+          update_params(response.response_body[0])
         end
 
         self

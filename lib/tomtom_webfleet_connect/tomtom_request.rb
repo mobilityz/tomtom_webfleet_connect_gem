@@ -20,10 +20,14 @@ module TomtomWebfleetConnect
 
     def send_request(url, options = {})
       @request_url = add_options_to_url(url, options.except(:action))
-      puts @request_url
+
       response_tomtom = HTTParty.get(@request_url)
+
+      TomtomWebfleetConnect.logger.debug 'Request url : ' + @request_url.to_s
+      TomtomWebfleetConnect.logger.debug 'Request direct response : ' +response_tomtom.to_json
+
       @response = @response.format_response(response_tomtom)
-      puts '', 'reponse finale :' + @response.to_json, ''
+
       return @response
     end
 

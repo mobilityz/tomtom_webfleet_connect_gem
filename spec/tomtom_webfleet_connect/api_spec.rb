@@ -163,7 +163,7 @@ describe TomtomWebfleetConnect::API do
         TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user2.id, tomtom_method_id: method.id
 
         (0..13).each do |i|
-          puts "------ essai #{i} ------"
+          TomtomWebfleetConnect.logger.debug  "------ essai #{i} ------"
           response = client.send_request({action: 'showObjectReportExtern', filterstring: 'GPS-TEST-1'})
           if i >= 12
             expect(response.http_status_code).to eq(200)
@@ -190,7 +190,7 @@ describe TomtomWebfleetConnect::API do
         TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user2.id, tomtom_method_id: calcRouteSimpleExtern.id
 
         (0..10).each do |i|
-          puts "------ essai #{i} ------"
+          TomtomWebfleetConnect.logger.debug  "------ essai #{i} ------"
           response = client.send_request({action: 'calcRouteSimpleExtern',
             use_traffic: 0,
             start_day: 'sun',

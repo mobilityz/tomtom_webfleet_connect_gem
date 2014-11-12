@@ -23,6 +23,8 @@ module TomtomWebfleetConnect
       method = TomtomWebfleetConnect::Models::TomtomMethod.find_by_name(options[:action])
       user = TomtomWebfleetConnect::Models::User.avalaible_user(method).first
 
+      TomtomWebfleetConnect.logger.debug 'Api user selected : ' + user.to_json
+
       if user.nil?
         response = TomtomWebfleetConnect::TomtomResponse.new(@response_format)
         response.http_status_code = 200
@@ -91,6 +93,7 @@ module TomtomWebfleetConnect
           counter.increment_counter
         end
       end
+      TomtomWebfleetConnect.logger.debug 'Counter state of selected user for ' + method.name + ' method : ' + counter.to_json
       get_base_url(user) + "&action=#{method.name}"
     end
 
