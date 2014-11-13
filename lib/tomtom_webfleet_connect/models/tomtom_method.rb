@@ -11,7 +11,7 @@ module TomtomWebfleetConnect
     	#
       attr_accessible :name, :quota, :quota_delay
 
-      self.table_name = "tomtom_webfleet_connect_methods"
+      self.table_name = 'tomtom_webfleet_connect_methods'
 
       has_many :method_counters
 

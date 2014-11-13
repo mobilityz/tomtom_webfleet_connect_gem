@@ -6,7 +6,7 @@ require 'tomtom_webfleet_connect/models/order_state'
 
 describe TomtomWebfleetConnect::Models::Order do
 
-  let(:client) { TomtomWebfleetConnect::API.new(ENV['API_KEY'], ENV['ACCOUNT'], {lang: 'fr', use_ISO8601: true, use_UTF8: true, response_format: ENV['FORMAT']}) }
+  let(:client) { TomtomWebfleetConnect::API.new(ENV['API_KEY'], ENV['ACCOUNT'], {lang: 'fr', use_ISO8601: true, use_UTF8: true}) }
   let!(:user) { TomtomWebfleetConnect::Models::User.create! :name => ENV['USER_NAME'], :password => ENV['USER_PASSWORD'] }
   let!(:user2) { TomtomWebfleetConnect::Models::User.create! :name => ENV['USER2_NAME'], :password => ENV['USER2_PASSWORD'] }
 

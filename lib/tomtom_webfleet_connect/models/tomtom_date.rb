@@ -91,29 +91,29 @@ module TomtomWebfleetConnect
       # ______________________________________________________
 
       def date_for_create
-        @datetime.strftime("%FT%:z")
+        @datetime.strftime('%FT%:z')
       end
 
       def time_for_create
-        @datetime.strftime("%T")
+        @datetime.strftime('%T')
       end
 
       def date_for_show
-        @datetime.strftime("%FT%:z")
+        @datetime.strftime('%FT%:z')
       end
 
       def time_for_show
-        @datetime.strftime("%T")
+        @datetime.strftime('%T')
       end
 
       def get_start_journey_datetime
         datetime = DateTime.new(@datetime.year,@datetime.month,@datetime.day,0,0,0,'+01:00')
-        datetime.strftime("%FT%T")
+        datetime.strftime('%FT%T')
       end
 
       def get_end_journey_datetime
         datetime = DateTime.new(@datetime.year,@datetime.month,@datetime.day,23,59,59,'+01:00')
-        datetime.strftime("%FT%T")
+        datetime.strftime('%FT%T')
       end
 
       def to_hash

@@ -1,6 +1,6 @@
 module TomtomWebfleetConnect
   class API
-    attr_accessor :key, :account, :lang, :use_ISO8601, :use_UTF8, :response_format
+    attr_accessor :key, :account, :lang, :use_ISO8601, :use_UTF8
     
     def initialize(key = nil, account = nil, default_parameters = {})
 
@@ -13,7 +13,6 @@ module TomtomWebfleetConnect
       @lang = default_parameters.delete(:lang) || self.lang
       @use_ISO8601 = default_parameters.delete(:use_ISO8601) || self.use_ISO8601
       @use_UTF8 = default_parameters.delete(:use_UTF8) || self.use_UTF8
-      @response_format = default_parameters.delete(:response_format) || self.response_format
       
       @default_params = {key: @key, account: @account}.merge(default_parameters)
     end
@@ -26,7 +25,7 @@ module TomtomWebfleetConnect
       TomtomWebfleetConnect.logger.debug 'Api user selected : ' + user.to_json
 
       if user.nil?
-        response = TomtomWebfleetConnect::TomtomResponse.new(@response_format)
+        response = TomtomWebfleetConnect::TomtomResponse.new
         response.http_status_code = 200
         response.http_status_message = 'OK'
         response.response_body = {}
@@ -36,7 +35,7 @@ module TomtomWebfleetConnect
         response.success = false
       else
         url = get_method_url(method, user)
-        request = TomtomWebfleetConnect::TomtomRequest.new(@response_format)
+        request = TomtomWebfleetConnect::TomtomRequest.new
         response =  request.send_request(url, options)
       end
 
@@ -65,15 +64,12 @@ module TomtomWebfleetConnect
     end
 
 
-
-    #private
-
     def get_root_url
       'https://csv.business.tomtom.com/extern'
     end
     
     def get_url_with_parameters
-      get_root_url + '?' + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=#{self.response_format}"
+      get_root_url + '?' + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=json"
     end
 
     def get_base_url(user)

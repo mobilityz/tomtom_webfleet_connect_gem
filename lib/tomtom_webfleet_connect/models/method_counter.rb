@@ -4,7 +4,7 @@ module TomtomWebfleetConnect
   module Models
     class MethodCounter < ActiveRecord::Base
       
-      self.table_name = "tomtom_webfleet_connect_method_counters"
+      self.table_name = 'tomtom_webfleet_connect_method_counters'
 
       # module METHODS
         

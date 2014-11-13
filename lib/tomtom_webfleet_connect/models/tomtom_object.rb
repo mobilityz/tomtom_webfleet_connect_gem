@@ -21,7 +21,7 @@ module TomtomWebfleetConnect
       end
 
       def to_s
-        string= ""
+        string = ''
 
         string += ":objectno=>#{@objectno}" unless @objectno.blank?
         string += ":objectname=>#{@objectname}" unless @objectname.blank?

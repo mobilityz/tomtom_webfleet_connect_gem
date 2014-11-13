@@ -9,7 +9,7 @@ describe TomtomWebfleetConnect::API do
   let!(:calcRouteSimpleExtern) { TomtomWebfleetConnect::Models::TomtomMethod.create! name: 'calcRouteSimpleExtern', quota: 6, quota_delay: 1 }
   let!(:createQueueExtern) { TomtomWebfleetConnect::Models::TomtomMethod.create! name: 'createQueueExtern', quota: 10, quota_delay: 24 * 60 }
 
-  let(:client) { TomtomWebfleetConnect::API.new(ENV['API_KEY'], ENV['ACCOUNT'], {lang: 'fr', use_ISO8601: true, use_UTF8: true, response_format: ENV['FORMAT']})}
+  let(:client) { TomtomWebfleetConnect::API.new(ENV['API_KEY'], ENV['ACCOUNT'], {lang: 'fr', use_ISO8601: true, use_UTF8: true})}
 
   before do
     @account = ENV['ACCOUNT']

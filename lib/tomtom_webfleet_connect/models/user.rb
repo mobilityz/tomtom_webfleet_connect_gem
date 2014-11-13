@@ -4,7 +4,7 @@ module TomtomWebfleetConnect
   module Models
     class User < ActiveRecord::Base
 
-      self.table_name = "tomtom_webfleet_connect_users"
+      self.table_name = 'tomtom_webfleet_connect_users'
 
       attr_accessible :name, :password
        

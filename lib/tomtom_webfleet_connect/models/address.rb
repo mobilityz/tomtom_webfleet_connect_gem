@@ -22,7 +22,7 @@ module TomtomWebfleetConnect
       end
 
       def to_s
-        ""
+        ''
       end
 
       def update(params)
@@ -51,7 +51,7 @@ module TomtomWebfleetConnect
       private
 
       def generate_destination
-        @destination = @city + ", " + @street if not @city.blank? and not @street.blank?
+        @destination = @city + ', ' + @street if not @city.blank? and not @street.blank?
       end
 
     end
