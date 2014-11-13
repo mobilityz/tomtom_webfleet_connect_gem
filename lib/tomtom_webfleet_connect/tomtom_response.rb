@@ -1,7 +1,5 @@
 module TomtomWebfleetConnect
 
-  require 'csv'
-
   ##
   # This class represents the formated tomtom response
   class TomtomResponse

@@ -1,22 +1,20 @@
 module TomtomWebfleetConnect
-  class API
-    attr_accessor :key, :account, :lang, :use_ISO8601, :use_UTF8
-    
-    def initialize(key = nil, account = nil, default_parameters = {})
+  class Client
 
-      @key = key || self.key
-      @key = @key.strip if @key
-      
-      @account = account || self.account
-      @account = @account.strip if @account
-      
-      @lang = default_parameters.delete(:lang) || self.lang
-      @use_ISO8601 = default_parameters.delete(:use_ISO8601) || self.use_ISO8601
-      @use_UTF8 = default_parameters.delete(:use_UTF8) || self.use_UTF8
-      
-      @default_params = {key: @key, account: @account}.merge(default_parameters)
+    # Define the same set of accessors as the TomtomWebfleetConnect module
+    attr_accessor *Configuration::VALID_CONFIG_KEYS
+
+    def initialize(options={})
+      # Merge the config values from the module and those passed
+      # to the client.
+      merged_options = TomtomWebfleetConnect.options.merge(options)
+
+      # Copy the merged values to this client and ignore those
+      # not part of our configuration
+      Configuration::VALID_CONFIG_KEYS.each do |key|
+        send("#{key}=", merged_options[key])
+      end
     end
-
 
     def send_request(options = {})
       method = TomtomWebfleetConnect::Models::TomtomMethod.find_by_name(options[:action])
@@ -45,18 +43,18 @@ module TomtomWebfleetConnect
 
     def estimate_route(start_date, start_latitude, start_longitude, end_latitude, end_longitude)
       options = {
-        action: 'calcRouteSimpleExtern',
-        use_traffic: 0,
-        start_day: date_to_tomtom_day(start_date),
-        start_time: date_to_tomtom_time(start_date),
-        start_latitude: format_lng_lat_to_tomtom(start_latitude),
-        start_longitude: format_lng_lat_to_tomtom(start_longitude),
-        end_latitude: format_lng_lat_to_tomtom(end_latitude),
-        end_longitude: format_lng_lat_to_tomtom(end_longitude)
+          action: 'calcRouteSimpleExtern',
+          use_traffic: 0,
+          start_day: TomtomWebfleetConnect.date_to_tomtom_day(start_date),
+          start_time: TomtomWebfleetConnect.date_to_tomtom_time(start_date),
+          start_latitude: TomtomWebfleetConnect.format_lng_lat_to_tomtom(start_latitude),
+          start_longitude: TomtomWebfleetConnect.format_lng_lat_to_tomtom(start_longitude),
+          end_latitude: TomtomWebfleetConnect.format_lng_lat_to_tomtom(end_latitude),
+          end_longitude: TomtomWebfleetConnect.format_lng_lat_to_tomtom(end_longitude)
       }
 
       response = send_request(options)
-      
+
       if response.success
         response.response_body[0][:time] = response.response_body[0][:time].sub('PT', '').sub('S', '').to_i
       end
@@ -64,16 +62,12 @@ module TomtomWebfleetConnect
     end
 
 
-    def get_root_url
-      'https://csv.business.tomtom.com/extern'
-    end
-    
     def get_url_with_parameters
-      get_root_url + '?' + "account=#{self.account}" + "&apikey=#{self.key}" + "&lang=#{self.lang}" + "&useISO8601=#{self.use_ISO8601}" + "&useUTF8=#{self.use_UTF8}" + "&outputformat=json"
+      endpoint + "?account=#{self.account}&apikey=#{self.api_key}&lang=#{self.lang}&useISO8601=#{self.use_ISO8601}&useUTF8=#{self.use_UTF8}&outputformat=#{self.format}"
     end
 
     def get_base_url(user)
-        return get_url_with_parameters + "&username=#{user.name}" + "&password=#{user.password}"
+      return get_url_with_parameters + "&username=#{user.name}&password=#{user.password}"
     end
 
     def get_method_url(method, user)
@@ -93,26 +87,6 @@ module TomtomWebfleetConnect
       get_base_url(user) + "&action=#{method.name}"
     end
 
-    #Formaters
-    def format_lng_lat_to_tomtom(number)
-      return (number * 10**6).round
-    end
+  end # Client
 
-    #logger.info {date.strftime("%FT%T.%L%:z") }
-    #start_datetime=#{estimate.departure.strftime("%FT%TZ")}&
-    #logger.info { "iso8601 : " + journey.estimate.departure.iso8601.to_s }
-    
-    def date_to_tomtom_day(date)
-      return date.strftime('a').downcase
-    end
-
-    def date_to_tomtom_time(date)
-      return date.strftime('%T')
-    end
-    #FIXME pb sur la date passé en paramètre
-    def date_to_tomtom_date(date)
-      return date.date.strftime('%FT%TZ')
-    end
-
-  end
 end
