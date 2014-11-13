@@ -3,7 +3,16 @@ require 'tomtom_webfleet_connect/models/tomtom_user'
 
 describe TomtomWebfleetConnect::Models::TomtomUser do
 
-  let(:client) { TomtomWebfleetConnect::API.new(ENV['API_KEY'], ENV['ACCOUNT'], {lang: 'fr', use_ISO8601: true, use_UTF8: true}) }
+  let(:client) {
+    TomtomWebfleetConnect.configure do |config|
+      config.api_key = ENV['API_KEY']
+      config.account = ENV['ACCOUNT']
+      config.lang = ENV['LANG']
+      config.user = ENV['USER_NAME']
+      config.mdp = ENV['USER_PASSWORD']
+    end
+    TomtomWebfleetConnect::Client.new
+  }
   let!(:user) { TomtomWebfleetConnect::Models::User.create! :name => ENV['USER_NAME'], :password => ENV['USER_PASSWORD'] }
   let!(:user2) { TomtomWebfleetConnect::Models::User.create! :name => ENV['USER2_NAME'], :password => ENV['USER2_PASSWORD'] }
 

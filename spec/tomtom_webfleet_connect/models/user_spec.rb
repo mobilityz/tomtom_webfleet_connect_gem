@@ -12,8 +12,17 @@ describe TomtomWebfleetConnect::Models::User do
   let(:user_with_started_counter) { TomtomWebfleetConnect::Models::User.create! :name => ENV['USER3_NAME'], :password => ENV['USER3_PASSWORD'] }
   let(:method2) { TomtomWebfleetConnect::Models::TomtomMethod.create! name: 'createQueueExtern', quota: 10, quota_delay: 24 * 60 }
   let(:started_method_counter) { TomtomWebfleetConnect::Models::MethodCounter.create! user_id: user_with_started_counter.id, tomtom_method_id: method2.id }
-  
-  let(:client) { TomtomWebfleetConnect::API.new(ENV['API_KEY'], ENV['ACCOUNT'], {lang: 'fr', use_ISO8601: true, use_UTF8: true})}
+
+  let(:client) {
+    TomtomWebfleetConnect.configure do |config|
+      config.api_key = ENV['API_KEY']
+      config.account = ENV['ACCOUNT']
+      config.lang = ENV['LANG']
+      config.user = ENV['USER_NAME']
+      config.mdp = ENV['USER_PASSWORD']
+    end
+    TomtomWebfleetConnect::Client.new
+  }
   
   its(:name) {is_expected.not_to be_nil}
   its(:password) {is_expected.not_to be_nil}
