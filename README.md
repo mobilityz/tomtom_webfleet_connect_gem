@@ -47,7 +47,6 @@ For rspec you need to create a local_env.yml in config directory to set environn
 ACCOUNT: 'xxx'
 API_KEY: 'xxx'
 LANG: 'fr'
-FORMAT: 'json'
 USER_NAME: 'xxx'
 USER_PASSWORD: 'xxx'
 USER2_NAME: 'xxx'
