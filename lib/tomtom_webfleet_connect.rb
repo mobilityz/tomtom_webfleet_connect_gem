@@ -3,7 +3,7 @@ require 'logger'
 
 require 'tomtom_webfleet_connect/version'
 require 'tomtom_webfleet_connect/configuration'
-require 'tomtom_webfleet_connect/Utils'
+require 'tomtom_webfleet_connect/utils'
 require 'tomtom_webfleet_connect/client'
 
 require 'tomtom_webfleet_connect/models/user'
