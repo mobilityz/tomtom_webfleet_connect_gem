@@ -58,8 +58,8 @@ USER4_NAME: 'xxx'
 USER4_PASSWORD: 'xxx'
 USER5_NAME: 'xxx'
 USER5_PASSWORD: 'xxx'
-GPS-TEST: '1'
+GPS_TEST: '1'
 GPS-TEST2: '2'
-EMAIL-TEST: 'contact@ecota.co'
+EMAIL_TEST: 'contact@ecota.co'
 ```
 

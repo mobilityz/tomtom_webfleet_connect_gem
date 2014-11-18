@@ -173,7 +173,7 @@ describe TomtomWebfleetConnect::Client do
 
         (0..13).each do |i|
           TomtomWebfleetConnect.logger.debug  "------ essai #{i} ------"
-          response = client.send_request({action: 'showObjectReportExtern', filterstring: 'GPS-TEST-1'})
+          response = client.send_request({action: 'showObjectReportExtern', filterstring: ENV['GPS_TEST']})
           if i >= 12
             expect(response.http_status_code).to eq(200)
             expect(response.http_status_message).to eq('OK')

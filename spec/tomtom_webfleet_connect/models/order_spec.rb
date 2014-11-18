@@ -39,12 +39,12 @@ describe TomtomWebfleetConnect::Models::Order do
   describe 'Order class methods' do
 
     before do
-      @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      @tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
       @order = TomtomWebfleetConnect::Models::Order.create(client, @tomtom_object, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order class methods text test'})
     end
 
     after do
-      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'], true))
+      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS_TEST'], true))
     end
 
     it 'insert order' do
@@ -135,7 +135,7 @@ describe TomtomWebfleetConnect::Models::Order do
   describe 'Tomtom methods' do
 
     before do
-      tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
       @order = TomtomWebfleetConnect::Models::Order.create(client, tomtom_object, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'Order text test'})
 
       addresse= TomtomWebfleetConnect::Models::Address.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
@@ -143,14 +143,14 @@ describe TomtomWebfleetConnect::Models::Order do
     end
 
     after do
-      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'], true))
-      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST2'], true))
+      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS_TEST'], true))
+      client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS_TEST2'], true))
     end
 
     it 'sendOrderExtern' do
 
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'sendOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
 
       response = client.send_request(order.sendOrderExtern)
 
@@ -165,7 +165,7 @@ describe TomtomWebfleetConnect::Models::Order do
     it 'sendDestinationOrderExtern' do
 
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'sendOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
       address = TomtomWebfleetConnect::Models::Address.new(client, {latitude: '51365338', longitude: '12398799', country: 'DE', zip: '04129', city: 'Leipzig', street: 'Maximilianallee 4'})
       order.address = address
 
@@ -218,7 +218,7 @@ describe TomtomWebfleetConnect::Models::Order do
     it 'cancelOrderExtern' do
 
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'cancelOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
 
       client.send_request(order.sendOrderExtern)
       response = client.send_request(order.cancelOrderExtern)
@@ -234,7 +234,7 @@ describe TomtomWebfleetConnect::Models::Order do
 
     it 'assignOrderExtern' do
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'assignOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
 
       client.send_request(order.sendOrderExtern)
       client.send_request(order.cancelOrderExtern)
@@ -252,10 +252,10 @@ describe TomtomWebfleetConnect::Models::Order do
 
     it 'reassignOrderExtern' do
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'reassignOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
 
       client.send_request(order.sendOrderExtern)
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST2']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST2']})
       response = client.send_request(order.reassignOrderExtern)
 
       expect(response.http_status_code).to eq(200)
@@ -270,7 +270,7 @@ describe TomtomWebfleetConnect::Models::Order do
     it 'deleteOrderExtern' do
 
       order= TomtomWebfleetConnect::Models::Order.new(client, {orderid: TomtomWebfleetConnect::Models::Order.generate_orderid, ordertext: 'deleteOrderExtern test'})
-      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS-TEST']})
+      order.tomtom_object = TomtomWebfleetConnect::Models::TomtomObject.new(client, {objectno: ENV['GPS_TEST']})
 
       client.send_request(order.sendOrderExtern)
       response = client.send_request(order.deleteOrderExtern(true))
@@ -286,7 +286,7 @@ describe TomtomWebfleetConnect::Models::Order do
 
     it 'clearOrdersExtern' do
 
-      response = client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS-TEST'], true))
+      response = client.send_request(TomtomWebfleetConnect::Models::Order.clearOrdersExtern(ENV['GPS_TEST'], true))
 
       expect(response.http_status_code).to eq(200)
       expect(response.http_status_message).to eq('OK')

@@ -74,7 +74,7 @@ describe TomtomWebfleetConnect::Models::TomtomUser do
 
       user= TomtomWebfleetConnect::Models::TomtomUser.new(client, {username: 'UserName-Test-Gem',
                                                           realname: 'RealName-Test-Gem',
-                                                          email: ENV['EMAIL-TEST'],
+                                                          email: ENV['EMAIL_TEST'],
                                                           profile: TomtomWebfleetConnect::Models::TomtomUser::PROFILES::ADMIN,
                                                           new_password: 'azerty?59',
                                                           info: 'Create by tomtom gem',
