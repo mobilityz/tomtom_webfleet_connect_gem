@@ -37,15 +37,17 @@ module TomtomWebfleetConnect
       #   ]
       # end
 
-      attr_accessible :user_id, :tomtom_method_id, :counter, :counter_start_at
-      
       validates :counter, numericality: { only_integer: true }, :allow_nil => true
       validates_uniqueness_of :user_id, :scope => :tomtom_method_id
       validates :user_id, :tomtom_method_id, :presence => true
       
       belongs_to :user
       belongs_to :tomtom_method
-      
+
+      def user_params
+        params.require(:method_counter).permit(:user_id, :tomtom_method_id, :counter, :counter_start_at)
+      end
+
       ##
       # return true if the counter can be reset
       def counter_can_be_reset?

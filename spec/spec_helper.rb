@@ -15,7 +15,7 @@ SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 SimpleCov.start
 
 TomtomWebfleetConnect.logger = Logger.new(STDOUT)
-TomtomWebfleetConnect.logger.level = Logger::WARN
+TomtomWebfleetConnect.logger.level = Logger::DEBUG
 
 ActiveRecord::Base.establish_connection(:adapter => 'sqlite3',
                                         :database => File.dirname(__FILE__) + '/tomtom_webfleet_connect.sqlite3')
@@ -29,6 +29,5 @@ RSpec.configure do |config|
   YAML.load(File.open(env_file)).each do |key, value|
     ENV[key.to_s] = value
   end if File.exists?(env_file)
-
 
 end

@@ -1,14 +1,14 @@
 source 'https://rubygems.org'
-ruby '1.9.3'
+ruby '2.3.0'
 
-gem 'activerecord', '3.2.11'
-gem 'activemodel', '3.2.11' #, "~> 3.2.14"
-gem 'httparty', '0.10.0'
+gem 'activerecord', '~> 4.2.6'
+gem 'activemodel', '~> 4.2.6'
+gem 'httparty', '~> 0.10.0'
 gem 'rack', '~> 1.5.2'
 
 group :development, :test do
   gem 'rake'
-  gem 'rspec', '~> 3.0.0'
+  gem 'rspec', '~> 3.4.0'
   gem 'rspec-its', '~> 1.0.1'
   gem 'rspec-legacy_formatters'
 end

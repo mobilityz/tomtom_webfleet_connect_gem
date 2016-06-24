@@ -432,7 +432,7 @@ module TomtomWebfleetConnect
           defaults = defaults.merge(options)
         end
 
-        return defaults
+        defaults
       end
 
       # Cancels orders that were submitted using one of sendDestinationOrderExtern,

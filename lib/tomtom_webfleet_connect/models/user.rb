@@ -6,8 +6,6 @@ module TomtomWebfleetConnect
 
       self.table_name = 'tomtom_webfleet_connect_users'
 
-      attr_accessible :name, :password
-       
       validates :name, :password, :presence => true
       #validates_uniqueness_of :name
       #validate :is_valid_tomtom_user?
@@ -18,16 +16,23 @@ module TomtomWebfleetConnect
       #  (which have counter for this method and 
       #    (quota less tan max or (quota equal or greater of max and quota delay exceeded))
       #  )
-      scope :avalaible_user, ->(method) {includes(:method_counters).where('(tomtom_webfleet_connect_users.id NOT IN (SELECT DISTINCT(user_id) FROM "tomtom_webfleet_connect_method_counters" as counter WHERE counter.tomtom_method_id = ?)) 
-                                                                          or (tomtom_webfleet_connect_method_counters.tomtom_method_id = ? and tomtom_webfleet_connect_method_counters.counter is null and tomtom_webfleet_connect_method_counters.counter_start_at is null)
-                                                                          or (tomtom_webfleet_connect_method_counters.tomtom_method_id = ? and tomtom_webfleet_connect_method_counters.counter < ?)
-                                                                          or (tomtom_webfleet_connect_method_counters.tomtom_method_id = ? and tomtom_webfleet_connect_method_counters.counter >= ? and tomtom_webfleet_connect_method_counters.counter_start_at < ?)',
-                                                                          method.id, method.id, method.id, (method.quota ), method.id, (method.quota) , DateTime.now - method.quota_delay.minutes)}
+      scope :avalaible_user, ->(method) {
+        includes(:method_counters)
+          .where('(tomtom_webfleet_connect_users.id NOT IN (SELECT DISTINCT(user_id) FROM tomtom_webfleet_connect_method_counters as counter
+                  WHERE (counter.tomtom_method_id = ? and counter.counter is null and counter.counter_start_at is null)
+                  or (counter.tomtom_method_id = ? and counter.counter < ?)
+                  or (counter.tomtom_method_id = ? and counter.counter >= ? and counter.counter_start_at < ?)))',
+                  method.id, method.id, (method.quota), method.id, (method.quota), DateTime.now - method.quota_delay.minutes)
+      }
        
       #not used
       def get_base_url(api)
         #TomtomWebfleetConnect::API
         return api.get_url_with_parameters + "&username=#{name}" + "&password=#{password}"
+      end
+
+      def user_params
+        params.require(:user).permit(:name, :password)
       end
 
       #not used yet

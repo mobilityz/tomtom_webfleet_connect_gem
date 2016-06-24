@@ -4,16 +4,16 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'tomtom_webfleet_connect/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "tomtom_webfleet_connect"
+  gem.name          = 'tomtom_webfleet_connect_gem'
   gem.version       = TomtomWebfleetConnect::VERSION
-  gem.authors       = ["Maxime Lenne"]
-  gem.email         = ["maxime.lenne@gmail.com"]
+  gem.authors       = ['Maxime Lenne']
+  gem.email         = ['maxime.lenne@gmail.com']
   gem.description   = %q{Ruby gem for easily integrate tomtom webfleet connect}
   gem.summary       = %q{Ruby wrapper tomtom webflet connect for ruby application}
-  gem.homepage      = "https://github.com/maxime-lenne/tomtom_webfleet_connect"
+  gem.homepage      = 'https://github.com/maxime-lenne/tomtom_webfleet_connect_gem'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
+  gem.require_paths = ['lib']
 end
